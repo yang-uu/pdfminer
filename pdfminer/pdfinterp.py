@@ -37,6 +37,7 @@ from .utils import MATRIX_IDENTITY
 class PDFResourceError(PDFException):
     pass
 
+
 class PDFInterpreterError(PDFException):
     pass
 
@@ -131,7 +132,6 @@ class PDFGraphicState:
 ##  Resource Manager
 ##
 class PDFResourceManager:
-
     """Repository of shared resources.
 
     ResourceManager facilitates reuse of shared resources
@@ -153,7 +153,7 @@ class PDFResourceManager:
             elif proc is LITERAL_TEXT:
                 pass
             else:
-                #raise PDFResourceError('ProcSet %r is not supported.' % proc)
+                # raise PDFResourceError('ProcSet %r is not supported.' % proc)
                 pass
         return
 
@@ -256,26 +256,26 @@ class PDFContentParser(PSStackParser):
         while i <= len(target):
             self.fillbuf()
             if i:
-                c = self.buf[self.charpos:self.charpos+1]
+                c = self.buf[self.charpos:self.charpos + 1]
                 data += c
                 self.charpos += 1
                 if len(target) <= i and c.isspace():
                     i += 1
-                elif i < len(target) and c == target[i:i+1]:
+                elif i < len(target) and c == target[i:i + 1]:
                     i += 1
                 else:
                     i = 0
             else:
                 try:
                     j = self.buf.index(target[0], self.charpos)
-                    #print('found', (0, self.buf[j:j+10]))
-                    data += self.buf[self.charpos:j+1]
-                    self.charpos = j+1
+                    # print('found', (0, self.buf[j:j+10]))
+                    data += self.buf[self.charpos:j + 1]
+                    self.charpos = j + 1
                     i = 1
                 except ValueError:
                     data += self.buf[self.charpos:]
                     self.charpos = len(self.buf)
-        data = data[:-(len(target)+1)]  # strip the last part
+        data = data[:-(len(target) + 1)]  # strip the last part
         data = re.sub(br'(\x0d\x0a|[\x0d\x0a])$', b'', data)
         return (pos, data)
 
@@ -297,7 +297,7 @@ class PDFContentParser(PSStackParser):
                 if len(objs) % 2 != 0:
                     raise PSTypeError('Invalid dictionary construct: %r' % objs)
                 d = dict((literal_name(k), v) for (k, v) in choplist(2, objs))
-                (pos, data) = self.get_inline_data(pos+len(b'ID '))
+                (pos, data) = self.get_inline_data(pos + len(b'ID '))
                 obj = PDFStream(d, data)
                 self.push((pos, obj))
                 self.push((pos, self.KEYWORD_EI))
@@ -312,7 +312,6 @@ class PDFContentParser(PSStackParser):
 ##  Interpreter
 ##
 class PDFPageInterpreter:
-
     debug = 0
 
     def __init__(self, rsrcmgr, device):
@@ -344,6 +343,7 @@ class PDFPageInterpreter:
                 return PDFColorSpace(name, len(list_value(spec[1])))
             else:
                 return PREDEFINED_COLORSPACE.get(name)
+
         for (k, v) in dict_value(resources).items():
             if self.debug:
                 logging.debug('Resource: %r: %r' % (k, v))
@@ -457,7 +457,7 @@ class PDFPageInterpreter:
 
     # load-gstate
     def do_gs(self, name):
-        #XXX
+        # XXX
         return
 
     # moveto
@@ -493,9 +493,9 @@ class PDFPageInterpreter:
     # rectangle
     def do_re(self, x, y, w, h):
         self.curpath.append(('m', x, y))
-        self.curpath.append(('l', x+w, y))
-        self.curpath.append(('l', x+w, y+h))
-        self.curpath.append(('l', x, y+h))
+        self.curpath.append(('l', x + w, y))
+        self.curpath.append(('l', x + w, y + h))
+        self.curpath.append(('l', x, y + h))
         self.curpath.append(('h',))
         return
 
@@ -516,6 +516,7 @@ class PDFPageInterpreter:
         self.device.paint_path(self.graphicstate, False, True, False, self.curpath)
         self.curpath = []
         return
+
     # fill (obsolete)
     do_F = do_f
 
@@ -582,32 +583,32 @@ class PDFPageInterpreter:
 
     # setgray-stroking
     def do_G(self, gray):
-        #self.do_CS(LITERAL_DEVICE_GRAY)
+        # self.do_CS(LITERAL_DEVICE_GRAY)
         return
 
     # setgray-non-stroking
     def do_g(self, gray):
-        #self.do_cs(LITERAL_DEVICE_GRAY)
+        # self.do_cs(LITERAL_DEVICE_GRAY)
         return
 
     # setrgb-stroking
     def do_RG(self, r, g, b):
-        #self.do_CS(LITERAL_DEVICE_RGB)
+        # self.do_CS(LITERAL_DEVICE_RGB)
         return
 
     # setrgb-non-stroking
     def do_rg(self, r, g, b):
-        #self.do_cs(LITERAL_DEVICE_RGB)
+        # self.do_cs(LITERAL_DEVICE_RGB)
         return
 
     # setcmyk-stroking
     def do_K(self, c, m, y, k):
-        #self.do_CS(LITERAL_DEVICE_CMYK)
+        # self.do_CS(LITERAL_DEVICE_CMYK)
         return
 
     # setcmyk-non-stroking
     def do_k(self, c, m, y, k):
-        #self.do_cs(LITERAL_DEVICE_CMYK)
+        # self.do_cs(LITERAL_DEVICE_CMYK)
         return
 
     # setcolor
@@ -725,18 +726,18 @@ class PDFPageInterpreter:
     # text-move
     def do_Td(self, tx, ty):
         (a, b, c, d, e, f) = self.textstate.matrix
-        self.textstate.matrix = (a, b, c, d, tx*a+ty*c+e, tx*b+ty*d+f)
+        self.textstate.matrix = (a, b, c, d, tx * a + ty * c + e, tx * b + ty * d + f)
         self.textstate.linematrix = (0, 0)
-        #print('Td(%r,%r): %r' % (tx, ty, self.textstate), file=sys.stderr)
+        # print('Td(%r,%r): %r' % (tx, ty, self.textstate), file=sys.stderr)
         return
 
     # text-move
     def do_TD(self, tx, ty):
         (a, b, c, d, e, f) = self.textstate.matrix
-        self.textstate.matrix = (a, b, c, d, tx*a+ty*c+e, tx*b+ty*d+f)
+        self.textstate.matrix = (a, b, c, d, tx * a + ty * c + e, tx * b + ty * d + f)
         self.textstate.leading = ty
         self.textstate.linematrix = (0, 0)
-        #print('TD(%r,%r): %r' % (tx, ty, self.textstate), file=sys.stderr)
+        # print('TD(%r,%r): %r' % (tx, ty, self.textstate), file=sys.stderr)
         return
 
     # textmatrix
@@ -748,13 +749,13 @@ class PDFPageInterpreter:
     # nextline
     def do_T_a(self):
         (a, b, c, d, e, f) = self.textstate.matrix
-        self.textstate.matrix = (a, b, c, d, self.textstate.leading*c+e, self.textstate.leading*d+f)
+        self.textstate.matrix = (a, b, c, d, self.textstate.leading * c + e, self.textstate.leading * d + f)
         self.textstate.linematrix = (0, 0)
         return
 
     # show-pos
     def do_TJ(self, seq):
-        #print('TJ(%r): %r' % (seq, self.textstate), file=sys.stderr)
+        # print('TJ(%r): %r' % (seq, self.textstate), file=sys.stderr)
         if self.textstate.font is None:
             if STRICT:
                 raise PDFInterpreterError('No font specified!')
@@ -848,7 +849,7 @@ class PDFPageInterpreter:
     def render_contents(self, resources, streams, ctm=MATRIX_IDENTITY):
         if self.debug:
             logging.info('render_contents: resources=%r, streams=%r, ctm=%r' %
-                     (resources, streams, ctm))
+                         (resources, streams, ctm))
         self.init_resources(resources)
         self.init_state(ctm)
         self.execute(list_value(streams))
@@ -870,7 +871,7 @@ class PDFPageInterpreter:
                 method = 'do_%s' % name.replace('*', '_a').replace('"', '_w').replace("'", '_q')
                 if hasattr(self, method):
                     func = getattr(self, method)
-                    nargs = func.__code__.co_argcount-1
+                    nargs = func.__code__.co_argcount - 1
                     if nargs:
                         args = self.pop(nargs)
                         if self.debug:

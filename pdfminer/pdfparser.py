@@ -22,7 +22,6 @@ class PDFSyntaxError(PDFException):
 ##  PDFParser
 ##
 class PDFParser(PSStackParser):
-
     """
     PDFParser fetch PDF objects from a file stream.
     It can handle indirect references by referring to
@@ -101,7 +100,7 @@ class PDFParser(PSStackParser):
             pos += len(line)
             self.fp.seek(pos)
             data = self.fp.read(objlen)
-            self.seek(pos+objlen)
+            self.seek(pos + objlen)
             while 1:
                 try:
                     (linepos, line) = self.nextline()
@@ -118,7 +117,7 @@ class PDFParser(PSStackParser):
                 objlen += len(line)
                 if self.fallback:
                     data += line
-            self.seek(pos+objlen)
+            self.seek(pos + objlen)
             # XXX limit objlen not to exceed object boundary
             if self.debug:
                 logging.debug('Stream: pos=%d, objlen=%d, dic=%r, data=%r...' % \
@@ -136,7 +135,6 @@ class PDFParser(PSStackParser):
 ##  PDFStreamParser
 ##
 class PDFStreamParser(PDFParser):
-
     """
     PDFStreamParser is used to parse PDF content streams
     that is contained in each page and has instructions
@@ -154,6 +152,7 @@ class PDFStreamParser(PDFParser):
         return
 
     KEYWORD_OBJ = KWD(b'obj')
+
     def do_keyword(self, pos, token):
         if token is self.KEYWORD_R:
             # reference to indirect object

@@ -12,7 +12,6 @@ from .psparser import STRICT
 from .utils import apply_png_predictor
 from .utils import isnumber
 
-
 LITERAL_CRYPT = LIT('Crypt')
 
 # Abbreviation of Filter names in PDF 4.8.6. "Inline Images"
@@ -30,17 +29,22 @@ LITERALS_DCT_DECODE = (LIT('DCTDecode'), LIT('DCT'))
 class PDFObject(PSObject):
     pass
 
+
 class PDFException(PSException):
     pass
+
 
 class PDFTypeError(PDFException):
     pass
 
+
 class PDFValueError(PDFException):
     pass
 
+
 class PDFObjectNotFound(PDFException):
     pass
+
 
 class PDFNotImplementedError(PDFException):
     pass
@@ -56,7 +60,7 @@ class PDFObjRef(PDFObject):
                 raise PDFValueError('PDF object id cannot be 0.')
         self.doc = doc
         self.objid = objid
-        #self.genno = genno  # Never used.
+        # self.genno = genno  # Never used.
         return
 
     def __repr__(self):
@@ -225,7 +229,7 @@ class PDFStream(PDFObject):
             filters = [filters]
         if not isinstance(params, list):
             # Make sure the parameters list is the same as filters.
-            params = [params]*len(filters)
+            params = [params] * len(filters)
         if STRICT and len(params) != len(filters):
             raise PDFException("Parameters len filter mismatch")
         return zip(filters, params)
@@ -241,7 +245,7 @@ class PDFStream(PDFObject):
             self.data = data
             self.rawdata = None
             return
-        for (f,params) in filters:
+        for (f, params) in filters:
             if f in LITERALS_FLATE_DECODE:
                 # will get errors if the document is encrypted.
                 try:
