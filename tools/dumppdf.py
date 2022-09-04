@@ -6,7 +6,8 @@
 #  options:
 #    -i objid : object id
 #
-import sys, os.path, re
+import os.path
+import sys
 from io import StringIO
 from pdfminer.psparser import PSKeyword, PSLiteral, LIT
 from pdfminer.pdfparser import PDFParser
@@ -160,7 +161,7 @@ def dumpoutline(outfp, fname, objids, pagenos, password=b'',
                 outfp.write('</outline>\n')
             outfp.write('</outlines>\n')
         except PDFNoOutlines:
-            pass
+            print("No outlines")
         parser.close()
     return
 
