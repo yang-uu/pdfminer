@@ -133,6 +133,7 @@ def dumpoutline(outfp, fname, objids, pagenos, password=b'',
             if isinstance(dest, dict):
                 dest = dest['D']
             return dest
+
         try:
             outlines = doc.get_outlines()
             outfp.write('<outlines>\n')
@@ -148,7 +149,8 @@ def dumpoutline(outfp, fname, objids, pagenos, password=b'',
                         if subtype and repr(subtype) == '/GoTo' and action.get('D'):
                             dest = resolve_dest(action['D'])
                             pageno = pages[dest[0].objid]
-                outfp.write('<outline level="%r" title="%s">\n' % (level, q(s)))
+                s = q(title).encode('utf-8', 'xmlcharrefreplace')
+                outfp.write('<outline level="%r" title="%s">\n' % (level, s))
                 if dest is not None:
                     outfp.write('<dest>')
                     dumpxml(outfp, dest)

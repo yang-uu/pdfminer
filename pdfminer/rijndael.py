@@ -1056,12 +1056,6 @@ def rijndaelDecrypt(rk, nrounds, ciphertext):
 
 # decrypt(key, fin, fout, keybits=256)
 class RijndaelDecryptor:
-    """
-    >>> key = bytes.fromhex('00010203050607080a0b0c0d0f101112')
-    >>> ciphertext = bytes.fromhex('d8f532538289ef7d06b506a4fd5be9c9')
-    >>> RijndaelDecryptor(key, 128).decrypt(ciphertext).hex()
-    '506812a45f08c889b97f5980038b8359'
-    """
 
     def __init__(self, key, keybits=256):
         assert len(key) == KEYLENGTH(keybits)
@@ -1077,12 +1071,6 @@ class RijndaelDecryptor:
 
 # encrypt(key, fin, fout, keybits=256)
 class RijndaelEncryptor:
-    """
-    >>> key = bytes.fromhex('00010203050607080a0b0c0d0f101112')
-    >>> plaintext = bytes.fromhex('506812a45f08c889b97f5980038b8359')
-    >>> RijndaelEncryptor(key, 128).encrypt(plaintext).hex()
-    'd8f532538289ef7d06b506a4fd5be9c9'
-    """
 
     def __init__(self, key, keybits=256):
         assert len(key) == KEYLENGTH(keybits)
@@ -1095,8 +1083,3 @@ class RijndaelEncryptor:
         assert len(plaintext) == 16
         return rijndaelEncrypt(self.rk, self.nrounds, plaintext)
 
-
-if __name__ == '__main__':
-    import doctest
-
-    print('pdfminer.rijndael', doctest.testmod())
