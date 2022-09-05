@@ -4,7 +4,12 @@ Miscellaneous Routines.
 """
 import struct
 from sys import maxsize as INF
+import urllib.parse
 
+
+# Url encoding
+def url(base, **kw):
+    return base + urllib.parse.urlencode(kw)
 
 ##  PNG Predictor
 ##
@@ -245,6 +250,8 @@ def bbox2str(bbox):
 def matrix2str(m):
     (a, b, c, d, e, f) = m
     return '[%.2f,%.2f,%.2f,%.2f, (%.2f,%.2f)]' % (a, b, c, d, e, f)
+
+
 
 
 ##  Plane

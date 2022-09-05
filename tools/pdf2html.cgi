@@ -14,32 +14,13 @@
 #   $ python setup.py install_lib --install-dir=$CGIDIR
 #   $ cp pdfminer/tools/pdf2html.cgi $CGIDIR
 #
-
 import sys, os, os.path, re, time
 import cgi, logging, traceback, random
-# comment out at this at runtime.
-#import cgitb; cgitb.enable()
 import pdfminer
-from pdfminer.pdfdocument import PDFDocument
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import HTMLConverter, TextConverter
 from pdfminer.layout import LAParams
-
-
-# quote HTML metacharacters
-def q(x):
-    return x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;').replace('"','&quot;')
-
-# encode parameters as a URL
-Q = re.compile(r'[^a-zA-Z0-9_.-=]')
-def url(base, **kw):
-    r = []
-    for (k,v) in kw.iteritems():
-        v = Q.sub(lambda m: '%%%02X' % ord(m.group(0)), encoder(q(v), 'replace')[0])
-        r.append('%s=%s' % (k, v))
-    return base+'&'.join(r)
-
 
 ##  convert
 ##
@@ -196,13 +177,13 @@ class WebApp(object):
             try:
                 convert(item.file, self.outfp, tmppath, pagenos=pagenos, codec=self.codec,
                         maxpages=self.MAXPAGES, maxfilesize=self.MAXFILESIZE, html=html)
-            except Exception, e:
+            except Exception as e:
                 self.put('<p>Sorry, an error has occurred: %s' % q(repr(e)))
                 self.logger.error('convert: %r: path=%r: %s' % (e, traceback.format_exc()))
         finally:
             try:
                 os.remove(tmppath)
-            except:
+            except Exception as e:
                 pass
         return
 
