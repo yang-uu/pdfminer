@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 import sys
+import getopt
+
+import pdfminer.image
+from pdfminer.cmapdb import CMapDB
 from pdfminer.pdfdocument import PDFDocument
-from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfdevice import TagExtractor
 from pdfminer.pdfpage import PDFPage
