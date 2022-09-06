@@ -1,9 +1,7 @@
-
-#!/usr/bin/env python
-
-from pdfminer.rijndael import *
+from pdfminer.rijndael import RijndaelDecryptor, RijndaelEncryptor
 
 import unittest
+
 
 class TestRijndael(unittest.TestCase):
 
@@ -18,6 +16,7 @@ class TestRijndael(unittest.TestCase):
         plaintext = bytes.fromhex('506812a45f08c889b97f5980038b8359')
         answer = RijndaelEncryptor(key, 128).encrypt(plaintext).hex()
         self.assertEqual(answer, 'd8f532538289ef7d06b506a4fd5be9c9')
+
 
 if __name__ == '__main__':
     unittest.main()

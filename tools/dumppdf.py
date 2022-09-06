@@ -161,7 +161,7 @@ def dumpoutline(outfp, fname, objids, pagenos, password=b'',
                 outfp.write('</outline>\n')
             outfp.write('</outlines>\n')
         except PDFNoOutlines:
-            print("No outlines")
+            pass
         parser.close()
     return
 
