@@ -43,21 +43,25 @@ class OutputType(Enum):
     TAG = "tag"
 
 
-def _print_help_message():
-    print(f'usage: [-P password] [-o output] [-t text|html|xml|tag]'
+def _print_help_message(command: str = ""):
+    print(f'usage: {command} [-P password] [-o output] [-t text|html|xml|tag]'
           ' [-O output_dir] [-c encoding] [-s scale] [-R rotation]'
           ' [-Y normal|loose|exact] [-p pagenos] [-m maxpages]'
           ' [-S] [-C] [-n] [-A] [-V] [-M char_margin] [-L line_margin]'
           ' [-W word_margin] [-F boxes_flow] [-d] input.pdf ...')
 
 
-def handle_input_variables(options: List[Tuple[str, str]], filenames: List[str]) -> None:
+def handle_input_variables(
+    options: List[Tuple[str, str]],
+    filenames: List[str],
+    command_name: str = ""):\
+
     # input option
     converter_params = ConverterParams(pagenos=set(), laparams=LAParams())
 
     # output option
     outfile = None
-    outtype: OutputType = None
+    outtype: Union[OutputType, None] = None
 
     for (k, v) in options:
         if k == '-d':
@@ -106,8 +110,8 @@ def handle_input_variables(options: List[Tuple[str, str]], filenames: List[str])
 
 def convert_from_pdf(filenames: List[str],
                      params: ConverterParams,
-                     outtype: OutputType = None,
-                     outfile: Union[str, None] = None) -> None:
+                     outtype: Union[OutputType, None] = None,
+                     outfile: Union[str, None] = None) -> Union[None, int]:
 
     PDFDocument.debug = params.debug
     PDFParser.debug = params.debug
@@ -124,7 +128,9 @@ def convert_from_pdf(filenames: List[str],
             elif outfile.endswith('.tag'):
                 outtype = OutputType.TAG
 
-    outfp = open(outfile, 'w', encoding=params.encoding) if outfile else sys.stdout
+    outfp = (
+        open(outfile, 'w', encoding=params.encoding) if outfile else sys.stdout
+    )
 
     if outtype == OutputType.TEXT:
         device = TextConverter(rsrcmgr, outfp, laparams=params.laparams,
@@ -135,8 +141,10 @@ def convert_from_pdf(filenames: List[str],
                               stripcontrol=params.stripcontrol)
     elif outtype == OutputType.HTML:
         device = HTMLConverter(rsrcmgr, outfp, scale=params.scale,
-                               layoutmode=params.layoutmode, laparams=params.laparams,
-                               imagewriter=params.imagewriter, debug=params.debug)
+                               layoutmode=params.layoutmode,
+                               laparams=params.laparams,
+                               imagewriter=params.imagewriter,
+                               debug=params.debug)
     elif outtype == OutputType.TAG:
         device = TagExtractor(rsrcmgr, outfp)
     else:
@@ -147,8 +155,10 @@ def convert_from_pdf(filenames: List[str],
         with open(fname, 'rb') as fp:
             interpreter = PDFPageInterpreter(rsrcmgr, device)
             for page in PDFPage.get_pages(fp, params.pagenos,
-                                          maxpages=params.maxpages, password=params.password,
-                                          caching=params.caching, check_extractable=True):
+                                          maxpages=params.maxpages,
+                                          password=params.password,
+                                          caching=params.caching,
+                                          check_extractable=True):
                 page.rotate = (page.rotate + params.rotation) % 360
                 interpreter.process_page(page)
     device.close()
@@ -157,7 +167,10 @@ def convert_from_pdf(filenames: List[str],
 
 def main(argv):
     try:
-        options, filenames = getopt.getopt(argv[1:], 'dP:o:t:O:c:s:R:Y:p:m:SCnAVM:W:L:F:')
+        options, filenames = getopt.getopt(
+            argv[1:],
+            'dP:o:t:O:c:s:R:Y:p:m:SCnAVM:W:L:F:'
+        )
         handle_input_variables(options, filenames)
     except getopt.GetoptError:
         _print_help_message()

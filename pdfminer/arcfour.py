@@ -7,8 +7,8 @@ This code is in the public domain.
 """
 
 
-##  Arcfour
-##
+#  Arcfour
+#
 class Arcfour:
 
     def __init__(self, key):

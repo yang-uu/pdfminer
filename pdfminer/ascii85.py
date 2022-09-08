@@ -65,4 +65,3 @@ def asciihexdecode(data):
     if m:
         out.append(int(m.group(1), 16) << 4)
     return bytes(out)
-
