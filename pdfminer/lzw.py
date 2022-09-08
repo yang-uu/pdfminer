@@ -96,4 +96,3 @@ class LZWDecoder:
 def lzwdecode(data):
     fp = BytesIO(data)
     return b''.join(LZWDecoder(fp).run())
-
