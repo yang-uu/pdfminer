@@ -1,4 +1,6 @@
 import unittest
+from pathlib import Path
+import os
 
 from tools.pdf2txt import handle_input_variables, convert_from_pdf, ConverterParams, OutputType
 from pdfminer.layout import LAParams
@@ -22,7 +24,7 @@ class TestPdf2Text(unittest.TestCase):
             self.assertEqual(contents, expected_output)
 
     def test_convert_simple1_pdf_file_to_text(self):
-        expected_filename = 'test_files/test_convert_simple1_pdf_file_to_text_expected.txt'
+        expected_filename = os.path.join(PATH, 'test_files/test_convert_simple1_pdf_file_to_text_expected.txt')
         with open(expected_filename, 'r') as file:
             expected_output = file.read()
 
