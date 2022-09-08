@@ -22,6 +22,11 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import HTMLConverter, TextConverter
 from pdfminer.layout import LAParams
 
+# quote HTML metacharacters
+def q(x):
+    return x.replace('&','&amp;').replace('>','&gt;').replace('<','&lt;').replace('"','&quot;')
+
+
 ##  convert
 ##
 class FileSizeExceeded(ValueError): pass
