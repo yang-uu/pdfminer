@@ -6,8 +6,8 @@ class CorruptDataError(Exception):
     pass
 
 
-##  LZWDecoder
-##
+#  LZWDecoder
+#
 class LZWDecoder:
 
     def __init__(self, fp):
@@ -28,7 +28,7 @@ class LZWDecoder:
                 # |-----8-bits-----|
                 # |-bpos-|-bits-|  |
                 # |      |----r----|
-                v = (v << bits) | ((self.buff >> (r - bits)) & ((1 << bits) - 1))
+                v = (v << bits) | ((self.buff >> (r-bits)) & ((1 << bits)-1))
                 self.bpos += bits
                 break
             else:
@@ -65,12 +65,12 @@ class LZWDecoder:
                 x = self.table[code]
             else:
                 raise CorruptDataError
-            l = len(self.table)
-            if l == 511:
+            lght = len(self.table)
+            if lght == 511:
                 self.nbits = 10
-            elif l == 1023:
+            elif lght == 1023:
                 self.nbits = 11
-            elif l == 2047:
+            elif lght == 2047:
                 self.nbits = 12
             self.prevbuf = x
         return x
@@ -94,15 +94,5 @@ class LZWDecoder:
 
 # lzwdecode
 def lzwdecode(data):
-    """
-    >>> lzwdecode(bytes.fromhex('800b6050220c0c8501'))
-    b'-----A---B'
-    """
     fp = BytesIO(data)
     return b''.join(LZWDecoder(fp).run())
-
-
-if __name__ == '__main__':
-    import doctest
-
-    print('pdfminer.lzw', doctest.testmod())
