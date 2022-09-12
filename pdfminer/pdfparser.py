@@ -13,13 +13,13 @@ from .pdftypes import int_value
 from .pdftypes import dict_value
 
 
-##  Exceptions
+# Exceptions
 ##
 class PDFSyntaxError(PDFException):
     pass
 
 
-##  PDFParser
+# PDFParser
 ##
 class PDFParser(PSStackParser):
     """
@@ -101,7 +101,7 @@ class PDFParser(PSStackParser):
             self.fp.seek(pos)
             data = self.fp.read(objlen)
             self.seek(pos + objlen)
-            while 1:
+            while True:
                 try:
                     (linepos, line) = self.nextline()
                 except PSEOF:
@@ -120,7 +120,7 @@ class PDFParser(PSStackParser):
             self.seek(pos + objlen)
             # XXX limit objlen not to exceed object boundary
             if self.debug:
-                logging.debug('Stream: pos=%d, objlen=%d, dic=%r, data=%r...' % \
+                logging.debug('Stream: pos=%d, objlen=%d, dic=%r, data=%r...' %
                               (pos, objlen, dic, data[:10]))
             obj = PDFStream(dic, data, self.doc.decipher)
             self.push((pos, obj))
@@ -132,7 +132,7 @@ class PDFParser(PSStackParser):
         return
 
 
-##  PDFStreamParser
+# PDFStreamParser
 ##
 class PDFStreamParser(PDFParser):
     """

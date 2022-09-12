@@ -21,14 +21,20 @@ class LZWDecoder:
 
     def readbits(self, bits):
         v = 0
-        while 1:
+        while True:
             # the number of remaining bits we can get from the current buffer.
             r = 8 - self.bpos
             if bits <= r:
                 # |-----8-bits-----|
                 # |-bpos-|-bits-|  |
                 # |      |----r----|
-                v = (v << bits) | ((self.buff >> (r-bits)) & ((1 << bits)-1))
+                v = (
+                    v << bits) | (
+                    (self.buff >> (
+                        r -
+                        bits)) & (
+                        (1 << bits) -
+                        1))
                 self.bpos += bits
                 break
             else:
@@ -76,7 +82,7 @@ class LZWDecoder:
         return x
 
     def run(self):
-        while 1:
+        while True:
             try:
                 code = self.readbits(self.nbits)
             except EOFError:
