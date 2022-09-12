@@ -6,7 +6,7 @@ from .utils import choplist
 STRICT = 0
 
 
-##  PS Exceptions
+# PS Exceptions
 ##
 class PSException(Exception):
     pass
@@ -28,10 +28,10 @@ class PSValueError(PSException):
     pass
 
 
-##  Basic PostScript Types
+# Basic PostScript Types
 ##
 
-##  PSObject
+# PSObject
 ##
 class PSObject:
     """Base class for all PS or PDF-related data types."""
@@ -39,7 +39,7 @@ class PSObject:
     pass
 
 
-##  PSLiteral
+# PSLiteral
 ##
 class PSLiteral(PSObject):
     """A class that represents a PostScript literal.
@@ -61,7 +61,7 @@ class PSLiteral(PSObject):
         return '/%r' % self.name
 
 
-##  PSKeyword
+# PSKeyword
 ##
 class PSKeyword(PSObject):
     """A class that represents a PostScript keyword.
@@ -82,7 +82,7 @@ class PSKeyword(PSObject):
         return self.name.decode('ascii')
 
 
-##  PSSymbolTable
+# PSSymbolTable
 ##
 class PSSymbolTable:
     """A utility class for storing PSLiteral/PSKeyword objects.
@@ -134,7 +134,7 @@ def keyword_name(x):
     return x.name
 
 
-##  PSBaseParser
+# PSBaseParser
 ##
 EOL = re.compile(br'[\r\n]')
 SPC = re.compile(br'\s')
@@ -166,7 +166,8 @@ class PSBaseParser:
         return
 
     def __repr__(self):
-        return '<%s: %r, bufpos=%d>' % (self.__class__.__name__, self.fp, self.bufpos)
+        return '<%s: %r, bufpos=%d>' % (
+            self.__class__.__name__, self.fp, self.bufpos)
 
     def flush(self):
         return
@@ -221,7 +222,7 @@ class PSBaseParser:
         linebuf = b''
         linepos = self.bufpos + self.charpos
         eol = False
-        while 1:
+        while True:
             self.fillbuf()
             if eol:
                 c = self.buf[self.charpos:self.charpos + 1]
@@ -260,7 +261,7 @@ class PSBaseParser:
             s = self.fp.read(prevpos - pos)
             if not s:
                 break
-            while 1:
+            while True:
                 n = max(s.rfind(b'\r'), s.rfind(b'\n'))
                 if n == -1:
                     buf = s + buf
@@ -348,7 +349,8 @@ class PSBaseParser:
             utoken = self._curtoken.decode('utf-8')
         except UnicodeDecodeError:
             # We failed, there is possibly a corrupt PDF here.
-            if STRICT: raise
+            if STRICT:
+                raise
             utoken = ""
         self._add_token(LIT(utoken))
         self._parse1 = self._parse_main
@@ -435,7 +437,8 @@ class PSBaseParser:
             return j + 1
         if c == b')':
             self.paren -= 1
-            if self.paren:  # WTF, they said balanced parens need no special treatment.
+            # WTF, they said balanced parens need no special treatment.
+            if self.paren:
                 self._curtoken += c
                 return j + 1
         self._add_token(self._curtoken)
@@ -503,7 +506,7 @@ class PSBaseParser:
         return token
 
 
-##  PSStackParser
+# PSStackParser
 ##
 class PSStackParser(PSBaseParser):
 
@@ -557,7 +560,9 @@ class PSStackParser(PSBaseParser):
         objs = [obj for (_, obj) in self.curstack]
         (pos, self.curtype, self.curstack) = self.context.pop()
         if self.debug:
-            logging.debug('end_type: pos=%r, type=%r, objs=%r' % (pos, type, objs))
+            logging.debug(
+                'end_type: pos=%r, type=%r, objs=%r' %
+                (pos, type, objs))
         return (pos, objs)
 
     def do_keyword(self, pos, token):
@@ -567,7 +572,8 @@ class PSStackParser(PSBaseParser):
         """Yields a list of objects.
 
         Returns keywords, literals, strings, numbers, arrays and dictionaries.
-        Arrays and dictionaries are represented as Python lists and dictionaries.
+        Arrays and dictionaries are represented
+        as Python lists and dictionaries.
         """
         while not self.results:
             (pos, token) = self.nexttoken()
@@ -593,9 +599,14 @@ class PSStackParser(PSBaseParser):
                 try:
                     (pos, objs) = self.end_type('d')
                     if len(objs) % 2 != 0:
-                        raise PSSyntaxError('Invalid dictionary construct: %r' % (objs,))
+                        raise PSSyntaxError(
+                            'Invalid dictionary construct: %r' %
+                            (objs,))
                     # construct a Python dictionary.
-                    d = dict((literal_name(k), v) for (k, v) in choplist(2, objs) if v is not None)
+                    d = dict(
+                        (literal_name(k), v) for (
+                            k, v) in choplist(
+                            2, objs) if v is not None)
                     self.push((pos, d))
                 except PSTypeError:
                     if STRICT:
@@ -612,7 +623,7 @@ class PSStackParser(PSBaseParser):
                         raise
             else:
                 if self.debug:
-                    logging.debug('do_keyword: pos=%r, token=%r, stack=%r' % \
+                    logging.debug('do_keyword: pos=%r, token=%r, stack=%r' %
                                   (pos, token, self.curstack))
                 self.do_keyword(pos, token)
             if self.context:

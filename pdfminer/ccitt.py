@@ -7,14 +7,15 @@
 #   ITU-T Recommendation T.4
 #     "Standardization of Group 3 facsimile terminals for document transmission"
 #   ITU-T Recommendation T.6
-#     "FACSIMILE CODING SCHEMES AND CODING CONTROL FUNCTIONS FOR GROUP 4 FACSIMILE APPARATUS"
+#     "FACSIMILE CODING SCHEMES AND CODING CONTROL
+#       FUNCTIONS FOR GROUP 4 FACSIMILE APPARATUS"
 
 
 import sys
 import array
 
 
-##  BitParser
+# BitParser
 ##
 class BitParser:
 
@@ -57,7 +58,7 @@ class BitParser:
         return
 
 
-##  CCITTG4Parser
+# CCITTG4Parser
 ##
 class CCITTG4Parser(BitParser):
     MODE = [None, None]
@@ -442,10 +443,11 @@ class CCITTG4Parser(BitParser):
         return
 
     def _do_vertical(self, dx):
-        # print('* vertical(%d): curpos=%r, color=%r' % (dx, self._curpos, self._color))
+        # print('* vertical(%d): curpos=%r, color=%r' %
+        # (dx, self._curpos, self._color))
         # print('  refline:', self._get_refline(self._curpos+1))
         x1 = self._curpos + 1
-        while 1:
+        while True:
             if x1 == 0:
                 if (self._color == 1 and self._refline[x1] != self._color):
                     break
@@ -472,7 +474,7 @@ class CCITTG4Parser(BitParser):
         # print('* pass: curpos=%r, color=%r' % (self._curpos, self._color))
         # print('  refline:', self._get_refline(self._curpos+1))
         x1 = self._curpos + 1
-        while 1:
+        while True:
             if x1 == 0:
                 if (self._color == 1 and self._refline[x1] != self._color):
                     break
@@ -482,7 +484,7 @@ class CCITTG4Parser(BitParser):
                   self._refline[x1] != self._color):
                 break
             x1 += 1
-        while 1:
+        while True:
             if x1 == 0:
                 if (self._color == 0 and self._refline[x1] == self._color):
                     break
@@ -498,7 +500,8 @@ class CCITTG4Parser(BitParser):
         return
 
     def _do_horizontal(self, n1, n2):
-        # print('* horizontal(%d,%d): curpos=%r, color=%r' % (n1, n2, self._curpos, self._color))
+        # print('* horizontal(%d,%d): curpos=%r, color=%r' %
+        # (n1, n2, self._curpos, self._color))
         if self._curpos < 0:
             self._curpos = 0
         x = self._curpos
@@ -524,7 +527,7 @@ class CCITTG4Parser(BitParser):
         return
 
 
-##  CCITTFaxDecoder
+# CCITTFaxDecoder
 ##
 class CCITTFaxDecoder(CCITTG4Parser):
 
@@ -593,4 +596,5 @@ def main(argv):
     return
 
 
-if __name__ == '__main__': sys.exit(main(sys.argv))
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))
