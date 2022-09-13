@@ -4,14 +4,22 @@ Miscellaneous Routines.
 """
 import struct
 from sys import maxsize as INF
+import urllib.parse
 
 
-##  PNG Predictor
+# Url encoding
+def url(base, **kw):
+    return base + urllib.parse.urlencode(kw)
+
+# PNG Predictor
 ##
+
+
 def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
     if bitspercomponent != 8:
         # unsupported
-        raise ValueError("Unsupported `bitspercomponent': %d" % bitspercomponent)
+        raise ValueError(
+            "Unsupported `bitspercomponent': %d" % bitspercomponent)
     nbytes = colors * columns * bitspercomponent // 8
     i = 0
     buf = b''
@@ -49,7 +57,7 @@ def apply_png_predictor(pred, colors, columns, bitspercomponent, data):
     return buf
 
 
-##  Matrix operations
+# Matrix operations
 ##
 MATRIX_IDENTITY = (1, 0, 0, 1, 0, 0)
 
@@ -84,7 +92,7 @@ def apply_matrix_norm(m, v):
     return a * p + c * q, b * p + d * q
 
 
-##  Utility functions
+# Utility functions
 ##
 
 # isnumber
@@ -169,19 +177,19 @@ def choplist(n, seq):
 # nunpack
 def nunpack(s, default=0):
     """Unpacks 1 to 4 byte integers (big endian)."""
-    l = len(s)
-    if not l:
+    length = len(s)
+    if not length:
         return default
-    elif l == 1:
+    elif length == 1:
         return s[0]
-    elif l == 2:
+    elif length == 2:
         return struct.unpack('>H', s)[0]
-    elif l == 3:
+    elif length == 3:
         return struct.unpack('>L', b'\x00' + s)[0]
-    elif l == 4:
+    elif length == 4:
         return struct.unpack('>L', s)[0]
     else:
-        raise TypeError('invalid length: %d' % l)
+        raise TypeError('invalid length: %d' % length)
 
 
 # decode_text
@@ -247,12 +255,12 @@ def matrix2str(m):
     return '[%.2f,%.2f,%.2f,%.2f, (%.2f,%.2f)]' % (a, b, c, d, e, f)
 
 
-##  Plane
+# Plane
 ##
-##  A set-like data structure for objects placed on a plane.
-##  Can efficiently find objects in a certain rectangular area.
-##  It maintains two parallel lists of objects, each of
-##  which is sorted by its x or y coordinate.
+# A set-like data structure for objects placed on a plane.
+# Can efficiently find objects in a certain rectangular area.
+# It maintains two parallel lists of objects, each of
+# which is sorted by its x or y coordinate.
 ##
 class Plane:
 
@@ -279,7 +287,8 @@ class Plane:
     def _getrange(self, bbox):
         (x0, y0, x1, y1) = bbox
         if (x1 <= self.x0 or self.x1 <= x0 or
-                y1 <= self.y0 or self.y1 <= y0): return
+                y1 <= self.y0 or self.y1 <= y0):
+            return
         x0 = max(self.x0, x0)
         y0 = max(self.y0, y0)
         x1 = min(self.x1, x1)

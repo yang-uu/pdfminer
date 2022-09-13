@@ -32,7 +32,7 @@ from .utils import mult_matrix
 from .utils import MATRIX_IDENTITY
 
 
-##  Exceptions
+# Exceptions
 ##
 class PDFResourceError(PDFException):
     pass
@@ -42,7 +42,7 @@ class PDFInterpreterError(PDFException):
     pass
 
 
-##  Constants
+# Constants
 ##
 LITERAL_PDF = LIT('PDF')
 LITERAL_TEXT = LIT('Text')
@@ -51,7 +51,7 @@ LITERAL_FORM = LIT('Form')
 LITERAL_IMAGE = LIT('Image')
 
 
-##  PDFTextState
+# PDFTextState
 ##
 class PDFTextState:
 
@@ -70,12 +70,20 @@ class PDFTextState:
         return
 
     def __repr__(self):
-        return ('<PDFTextState: font=%r, fontsize=%r, charspace=%r, wordspace=%r, '
-                ' scaling=%r, leading=%r, render=%r, rise=%r, '
-                ' matrix=%r, linematrix=%r>' %
-                (self.font, self.fontsize, self.charspace, self.wordspace,
-                 self.scaling, self.leading, self.render, self.rise,
-                 self.matrix, self.linematrix))
+        return (
+            '<PDFTextState: font=%r, fontsize=%r, charspace=%r, wordspace=%r, '
+            ' scaling=%r, leading=%r, render=%r, rise=%r, '
+            ' matrix=%r, linematrix=%r>' %
+            (self.font,
+             self.fontsize,
+             self.charspace,
+             self.wordspace,
+             self.scaling,
+             self.leading,
+             self.render,
+             self.rise,
+             self.matrix,
+             self.linematrix))
 
     def copy(self):
         obj = PDFTextState()
@@ -97,7 +105,7 @@ class PDFTextState:
         return
 
 
-##  PDFGraphicState
+# PDFGraphicState
 ##
 class PDFGraphicState:
 
@@ -129,7 +137,7 @@ class PDFGraphicState:
                  self.miterlimit, self.dash, self.intent, self.flatness))
 
 
-##  Resource Manager
+# Resource Manager
 ##
 class PDFResourceManager:
     """Repository of shared resources.
@@ -170,7 +178,9 @@ class PDFResourceManager:
             font = self._cached_fonts[objid]
         else:
             if self.debug:
-                logging.info('get_font: create: objid=%r, spec=%r' % (objid, spec))
+                logging.info(
+                    'get_font: create: objid=%r, spec=%r' %
+                    (objid, spec))
             if STRICT:
                 if spec['Type'] is not LITERAL_FONT:
                     raise PDFFontError('Type is not /Font')
@@ -211,7 +221,7 @@ class PDFResourceManager:
         return font
 
 
-##  PDFContentParser
+# PDFContentParser
 ##
 class PDFContentParser(PSStackParser):
 
@@ -239,7 +249,7 @@ class PDFContentParser(PSStackParser):
     def fillbuf(self):
         if self.charpos < len(self.buf):
             return
-        while 1:
+        while True:
             self.fillfp()
             self.bufpos = self.fp.tell()
             self.buf = self.fp.read(self.BUFSIZ)
@@ -295,7 +305,8 @@ class PDFContentParser(PSStackParser):
             try:
                 (_, objs) = self.end_type('inline')
                 if len(objs) % 2 != 0:
-                    raise PSTypeError('Invalid dictionary construct: %r' % objs)
+                    raise PSTypeError(
+                        'Invalid dictionary construct: %r' % objs)
                 d = dict((literal_name(k), v) for (k, v) in choplist(2, objs))
                 (pos, data) = self.get_inline_data(pos + len(b'ID '))
                 obj = PDFStream(d, data)
@@ -309,7 +320,7 @@ class PDFContentParser(PSStackParser):
         return
 
 
-##  Interpreter
+# Interpreter
 ##
 class PDFPageInterpreter:
     debug = 0
@@ -337,7 +348,8 @@ class PDFPageInterpreter:
                 name = literal_name(spec[0])
             else:
                 name = literal_name(spec)
-            if name == 'ICCBased' and isinstance(spec, list) and 2 <= len(spec):
+            if name == 'ICCBased' and isinstance(
+                    spec, list) and 2 <= len(spec):
                 return PDFColorSpace(name, stream_value(spec[1])['N'])
             elif name == 'DeviceN' and isinstance(spec, list) and 2 <= len(spec):
                 return PDFColorSpace(name, len(list_value(spec[1])))
@@ -501,7 +513,12 @@ class PDFPageInterpreter:
 
     # stroke
     def do_S(self):
-        self.device.paint_path(self.graphicstate, True, False, False, self.curpath)
+        self.device.paint_path(
+            self.graphicstate,
+            True,
+            False,
+            False,
+            self.curpath)
         self.curpath = []
         return
 
@@ -513,7 +530,12 @@ class PDFPageInterpreter:
 
     # fill
     def do_f(self):
-        self.device.paint_path(self.graphicstate, False, True, False, self.curpath)
+        self.device.paint_path(
+            self.graphicstate,
+            False,
+            True,
+            False,
+            self.curpath)
         self.curpath = []
         return
 
@@ -522,19 +544,30 @@ class PDFPageInterpreter:
 
     # fill-even-odd
     def do_f_a(self):
-        self.device.paint_path(self.graphicstate, False, True, True, self.curpath)
+        self.device.paint_path(self.graphicstate, False,
+                               True, True, self.curpath)
         self.curpath = []
         return
 
     # fill-and-stroke
     def do_B(self):
-        self.device.paint_path(self.graphicstate, True, True, False, self.curpath)
+        self.device.paint_path(
+            self.graphicstate,
+            True,
+            True,
+            False,
+            self.curpath)
         self.curpath = []
         return
 
     # fill-and-stroke-even-odd
     def do_B_a(self):
-        self.device.paint_path(self.graphicstate, True, True, True, self.curpath)
+        self.device.paint_path(
+            self.graphicstate,
+            True,
+            True,
+            True,
+            self.curpath)
         self.curpath = []
         return
 
@@ -726,7 +759,8 @@ class PDFPageInterpreter:
     # text-move
     def do_Td(self, tx, ty):
         (a, b, c, d, e, f) = self.textstate.matrix
-        self.textstate.matrix = (a, b, c, d, tx * a + ty * c + e, tx * b + ty * d + f)
+        self.textstate.matrix = (
+            a, b, c, d, tx * a + ty * c + e, tx * b + ty * d + f)
         self.textstate.linematrix = (0, 0)
         # print('Td(%r,%r): %r' % (tx, ty, self.textstate), file=sys.stderr)
         return
@@ -734,7 +768,8 @@ class PDFPageInterpreter:
     # text-move
     def do_TD(self, tx, ty):
         (a, b, c, d, e, f) = self.textstate.matrix
-        self.textstate.matrix = (a, b, c, d, tx * a + ty * c + e, tx * b + ty * d + f)
+        self.textstate.matrix = (
+            a, b, c, d, tx * a + ty * c + e, tx * b + ty * d + f)
         self.textstate.leading = ty
         self.textstate.linematrix = (0, 0)
         # print('TD(%r,%r): %r' % (tx, ty, self.textstate), file=sys.stderr)
@@ -749,7 +784,17 @@ class PDFPageInterpreter:
     # nextline
     def do_T_a(self):
         (a, b, c, d, e, f) = self.textstate.matrix
-        self.textstate.matrix = (a, b, c, d, self.textstate.leading * c + e, self.textstate.leading * d + f)
+        self.textstate.matrix = (
+            a,
+            b,
+            c,
+            d,
+            self.textstate.leading *
+            c +
+            e,
+            self.textstate.leading *
+            d +
+            f)
         self.textstate.linematrix = (0, 0)
         return
 
@@ -805,7 +850,8 @@ class PDFPageInterpreter:
             if STRICT:
                 raise PDFInterpreterError('Undefined xobject id: %r' % xobjid)
             return
-        if self.debug: logging.info('Processing xobj: %r' % xobj)
+        if self.debug:
+            logging.info('Processing xobj: %r' % xobj)
         subtype = xobj.get('Subtype')
         if subtype is LITERAL_FORM and 'BBox' in xobj:
             interpreter = self.dup()
@@ -814,9 +860,12 @@ class PDFPageInterpreter:
             # According to PDF reference 1.7 section 4.9.1, XObjects in
             # earlier PDFs (prior to v1.2) use the page's Resources entry
             # instead of having their own Resources entry.
-            resources = dict_value(xobj.get('Resources')) or self.resources.copy()
+            resources = dict_value(
+                xobj.get('Resources')) or self.resources.copy()
             self.device.begin_figure(xobjid, bbox, matrix)
-            interpreter.render_contents(resources, [xobj], ctm=mult_matrix(matrix, self.ctm))
+            interpreter.render_contents(
+                resources, [xobj], ctm=mult_matrix(
+                    matrix, self.ctm))
             self.device.end_figure(xobjid)
         elif subtype is LITERAL_IMAGE and 'Width' in xobj and 'Height' in xobj:
             self.device.begin_figure(xobjid, (0, 0, 1, 1), MATRIX_IDENTITY)
@@ -828,7 +877,8 @@ class PDFPageInterpreter:
         return
 
     def process_page(self, page):
-        if self.debug: logging.info('Processing page: %r' % page)
+        if self.debug:
+            logging.info('Processing page: %r' % page)
         (x0, y0, x1, y1) = page.mediabox
         if page.rotate == 90:
             ctm = (0, -1, 1, 0, -y0, x1)
@@ -861,14 +911,20 @@ class PDFPageInterpreter:
         except PSEOF:
             # empty page
             return
-        while 1:
+        while True:
             try:
                 (_, obj) = parser.nextobject()
             except PSEOF:
                 break
             if isinstance(obj, PSKeyword):
                 name = keyword_name(obj).decode('ascii')
-                method = 'do_%s' % name.replace('*', '_a').replace('"', '_w').replace("'", '_q')
+                method = 'do_%s' % name.replace(
+                    '*',
+                    '_a').replace(
+                    '"',
+                    '_w').replace(
+                    "'",
+                    '_q')
                 if hasattr(self, method):
                     func = getattr(self, method)
                     nargs = func.__code__.co_argcount - 1
@@ -884,7 +940,8 @@ class PDFPageInterpreter:
                         func()
                 else:
                     if STRICT:
-                        raise PDFInterpreterError('Unknown operator: %r' % name)
+                        raise PDFInterpreterError(
+                            'Unknown operator: %r' % name)
             else:
                 self.push(obj)
         return

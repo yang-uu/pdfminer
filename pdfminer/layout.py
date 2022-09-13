@@ -10,7 +10,7 @@ from .utils import matrix2str
 from .utils import apply_matrix_pt
 
 
-##  IndexAssigner
+# IndexAssigner
 ##
 class IndexAssigner:
 
@@ -28,7 +28,7 @@ class IndexAssigner:
         return
 
 
-##  LAParams
+# LAParams
 ##
 class LAParams:
 
@@ -50,11 +50,12 @@ class LAParams:
         return
 
     def __repr__(self):
-        return ('<LAParams: char_margin=%.1f, line_margin=%.1f, word_margin=%.1f all_texts=%r>' %
-                (self.char_margin, self.line_margin, self.word_margin, self.all_texts))
+        return (
+            '<LAParams: char_margin=%.1f, line_margin=%.1f, word_margin=%.1f all_texts=%r>' %
+            (self.char_margin, self.line_margin, self.word_margin, self.all_texts))
 
 
-##  LTItem
+# LTItem
 ##
 class LTItem:
 
@@ -63,7 +64,7 @@ class LTItem:
         return
 
 
-##  LTText
+# LTText
 ##
 class LTText:
 
@@ -75,7 +76,7 @@ class LTText:
         raise NotImplementedError
 
 
-##  LTComponent
+# LTComponent
 ##
 class LTComponent(LTItem):
 
@@ -152,7 +153,7 @@ class LTComponent(LTItem):
             return 0
 
 
-##  LTCurve
+# LTCurve
 ##
 class LTCurve(LTComponent):
 
@@ -166,7 +167,7 @@ class LTCurve(LTComponent):
         return ','.join('%.3f,%.3f' % p for p in self.pts)
 
 
-##  LTLine
+# LTLine
 ##
 class LTLine(LTCurve):
 
@@ -175,17 +176,19 @@ class LTLine(LTCurve):
         return
 
 
-##  LTRect
+# LTRect
 ##
 class LTRect(LTCurve):
 
     def __init__(self, linewidth, bbox):
         (x0, y0, x1, y1) = bbox
-        LTCurve.__init__(self, linewidth, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)])
+        LTCurve.__init__(
+            self, linewidth, [
+                (x0, y0), (x1, y0), (x1, y1), (x0, y1)])
         return
 
 
-##  LTImage
+# LTImage
 ##
 class LTImage(LTComponent):
 
@@ -208,7 +211,7 @@ class LTImage(LTComponent):
                  bbox2str(self.bbox), self.srcsize))
 
 
-##  LTAnno
+# LTAnno
 ##
 class LTAnno(LTItem, LTText):
 
@@ -220,7 +223,7 @@ class LTAnno(LTItem, LTText):
         return self._text
 
 
-##  LTChar
+# LTChar
 ##
 class LTChar(LTComponent, LTText):
 
@@ -281,7 +284,7 @@ class LTChar(LTComponent, LTText):
         return True
 
 
-##  LTContainer
+# LTContainer
 ##
 class LTContainer(LTComponent):
 
@@ -311,7 +314,7 @@ class LTContainer(LTComponent):
         return
 
 
-##  LTExpandableContainer
+# LTExpandableContainer
 ##
 class LTExpandableContainer(LTContainer):
 
@@ -326,7 +329,7 @@ class LTExpandableContainer(LTContainer):
         return
 
 
-##  LTTextContainer
+# LTTextContainer
 ##
 class LTTextContainer(LTExpandableContainer, LTText):
 
@@ -336,10 +339,11 @@ class LTTextContainer(LTExpandableContainer, LTText):
         return
 
     def get_text(self):
-        return ''.join(obj.get_text() for obj in self if isinstance(obj, LTText))
+        return ''.join(obj.get_text()
+                       for obj in self if isinstance(obj, LTText))
 
 
-##  LTTextLine
+# LTTextLine
 ##
 class LTTextLine(LTTextContainer):
 
@@ -414,10 +418,10 @@ class LTTextLineVertical(LTTextLine):
                      abs(obj.y1 - self.y1) < d))]
 
 
-##  LTTextBox
+# LTTextBox
 ##
-##  A set of text objects that are grouped within
-##  a certain rectangular area.
+# A set of text objects that are grouped within
+# a certain rectangular area.
 ##
 class LTTextBox(LTTextContainer):
 
@@ -454,7 +458,7 @@ class LTTextBoxVertical(LTTextBox):
         return 'tb-rl'
 
 
-##  LTTextGroup
+# LTTextGroup
 ##
 class LTTextGroup(LTTextContainer):
 
@@ -470,8 +474,8 @@ class LTTextGroupLRTB(LTTextGroup):
         LTTextGroup.analyze(self, laparams)
         # reorder the objects from top-left to bottom-right.
         self._objs = csort(self._objs, key=lambda obj:
-        (1 - laparams.boxes_flow) * obj.x0 -
-        (1 + laparams.boxes_flow) * (obj.y0 + obj.y1))
+                           (1 - laparams.boxes_flow) * obj.x0 -
+                           (1 + laparams.boxes_flow) * (obj.y0 + obj.y1))
         return
 
 
@@ -481,12 +485,12 @@ class LTTextGroupTBRL(LTTextGroup):
         LTTextGroup.analyze(self, laparams)
         # reorder the objects from top-right to bottom-left.
         self._objs = csort(self._objs, key=lambda obj:
-        -(1 + laparams.boxes_flow) * (obj.x0 + obj.x1)
-        - (1 - laparams.boxes_flow) * (obj.y1))
+                           -(1 + laparams.boxes_flow) * (obj.x0 + obj.x1)
+                           - (1 - laparams.boxes_flow) * (obj.y1))
         return
 
 
-##  LTLayoutContainer
+# LTLayoutContainer
 ##
 class LTLayoutContainer(LTContainer):
 
@@ -574,7 +578,8 @@ class LTLayoutContainer(LTContainer):
         boxes = {}
         for line in lines:
             neighbors = line.find_neighbors(plane, laparams.line_margin)
-            if line not in neighbors: continue
+            if line not in neighbors:
+                continue
             members = []
             for obj1 in neighbors:
                 members.append(obj1)
@@ -589,7 +594,8 @@ class LTLayoutContainer(LTContainer):
                 boxes[obj] = box
         done = set()
         for line in lines:
-            if line not in boxes: continue
+            if line not in boxes:
+                continue
             box = boxes[line]
             if box in done:
                 continue
@@ -618,7 +624,8 @@ class LTLayoutContainer(LTContainer):
             y0 = min(obj1.y0, obj2.y0)
             x1 = max(obj1.x1, obj2.x1)
             y1 = max(obj1.y1, obj2.y1)
-            return ((x1 - x0) * (y1 - y0) - obj1.width * obj1.height - obj2.width * obj2.height)
+            return ((x1 - x0) * (y1 - y0) - obj1.width *
+                    obj1.height - obj2.width * obj2.height)
 
         def isany(obj1, obj2):
             """Check if there's any other object between obj1 and obj2.
@@ -698,7 +705,7 @@ class LTLayoutContainer(LTContainer):
         return
 
 
-##  LTFigure
+# LTFigure
 ##
 class LTFigure(LTLayoutContainer):
 
@@ -706,8 +713,11 @@ class LTFigure(LTLayoutContainer):
         self.name = name
         self.matrix = matrix
         (x, y, w, h) = bbox
-        bbox = get_bound(apply_matrix_pt(matrix, (p, q))
-                         for (p, q) in ((x, y), (x + w, y), (x, y + h), (x + w, y + h)))
+        bbox = get_bound(
+            apply_matrix_pt(
+                matrix, (p, q)) for (
+                p, q) in (
+                (x, y), (x + w, y), (x, y + h), (x + w, y + h)))
         LTLayoutContainer.__init__(self, bbox)
         return
 
@@ -723,7 +733,7 @@ class LTFigure(LTLayoutContainer):
         return
 
 
-##  LTPage
+# LTPage
 ##
 class LTPage(LTLayoutContainer):
 
