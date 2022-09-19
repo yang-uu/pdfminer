@@ -110,6 +110,7 @@ def handle_input_variables(
         elif k == '-h':
             ConverterParams.get_chapters = True
 
+        # Special considerations if the user wants to generate the book chapters as txt.
         if ConverterParams.get_chapters:
             chapters = split_by_chapters(filenames[0])
             write_chapters_to_files(chapters)
@@ -177,7 +178,7 @@ def convert_from_pdf(filenames: List[str],
 
 def split_by_chapters(file_name: str) -> List[str]:
     if not file_name.endswith('.txt'):
-        raise Exception("File type must be Text File")
+        raise Exception('File type must be Text File')
     with open(file_name, 'r', encoding='utf-8') as f:
         lines = f.readlines()
 
@@ -196,13 +197,13 @@ def split_by_chapters(file_name: str) -> List[str]:
 
             if is_number.match(chapter_number):
                 chapter += 1
-                chapters.append("")
+                chapters.append('')
         chapters[chapter] += curr_line
 
     return chapters
 
 
-def write_chapters_to_files(chapters: List[str], path=''):
+def write_chapters_to_files(chapters: List[str], path='') -> None:
     index = 0
     for chapter in chapters:
         chapter_name = 'introduction.txt' if index == 0 else 'chapter' + str(index) + '.txt'
