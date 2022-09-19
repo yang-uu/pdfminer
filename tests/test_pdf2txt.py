@@ -118,14 +118,18 @@ class TestPdf2Text(unittest.TestCase):
 
 class TestPdf2Chapters(unittest.TestCase):
 
-    def test_split_by_chapters(self):
-        file_name = '../samples/samples_for_chapter_retrieval/course_book_full.txt'
-        chapters = split_by_chapters(file_name)
-        print(len(chapters))
-        # for chapter in chapters:
-        #     print(chapter[:200])
-        #     print('--------------')
-        write_chapters_to_files(chapters)
+    def setUp(self) -> None:
+        self.course_book_txt_file = '../samples/samples_for_chapter_retrieval/course_book_full.txt'
+        self.course_book_pdf_file = '../samples/samples_for_chapter_retrieval/course_book_full.pdf'
+
+    def test_split_txt_file_by_chapters(self):
+        chapters = split_by_chapters(self.course_book_txt_file)
+        expected_length = 26
+        self.assertEqual(len(chapters), expected_length)
+
+    def test_write_chapters_to_txt_files(self):
+        chapters = split_by_chapters(self.course_book_txt_file)
+        write_chapters_to_files(chapters, path='test_chapters/')
 
 
 if __name__ == '__main__':

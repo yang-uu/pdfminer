@@ -111,7 +111,8 @@ def handle_input_variables(
             ConverterParams.get_chapters = True
 
         if ConverterParams.get_chapters:
-            split_by_chapters(filenames[0])
+            chapters = split_by_chapters(filenames[0])
+            write_chapters_to_files(chapters)
             return
         convert_from_pdf(filenames, converter_params, outtype, outfile)
 
@@ -181,12 +182,9 @@ def split_by_chapters(file_name):
         lines = f.readlines()
         chapter = 0
 
-        chapters = []
-        chapters.append("")
-        ### variable found chapter one false
-        chapter_one_found = False
+        chapters = [""]
+
         for line_nr in range(0, len(lines) - 1):
-            ##if havnet found chapter one, next iteration, when find set true
 
             curr_line = lines[line_nr]
             next_line = lines[line_nr + 1]
@@ -199,21 +197,17 @@ def split_by_chapters(file_name):
                     chapter += 1
                     chapters.append("")
             chapters[chapter] += curr_line
-        write_chapters_to_files(chapters)
+
         return chapters
 
 
-def write_chapters_to_files(chapters):
+def write_chapters_to_files(chapters, path=''):
     index = 0
     for chapter in chapters:
-        if index == 0:
-            with open("introduction", 'w', encoding='utf-8') as f:
-                f.write(chapter)
-                index += 1
-        else:
-            with open("chapter" + str(index), 'w', encoding='utf-8') as f:
-                f.write(chapter)
-                index += 1
+        chapter_name = 'introduction.txt' if index == 0 else 'chapter' + str(index) + '.txt'
+        with open(path + chapter_name, 'w', encoding='utf-8') as f:
+            f.write(chapter)
+        index += 1
 
 
 def main(argv):
