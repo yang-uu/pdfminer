@@ -169,9 +169,51 @@ def convert_from_pdf(filenames: List[str],
                                           check_extractable=True):
                 page.rotate = (page.rotate + params.rotation) % 360
                 interpreter.process_page(page)
+
     device.close()
     outfp.close()
 
+
+def split_by_chapters(file_name):
+    if not file_name.endswith('.txt'):
+        raise Exception("File type must be Text File")
+    with open(file_name, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+        chapter = 0
+
+        chapters = []
+        chapters.append("")
+        ### variable found chapter one false
+        chapter_one_found = False
+        for line_nr in range(0, len(lines) - 1):
+            ##if havnet found chapter one, next iteration, when find set true
+
+            curr_line = lines[line_nr]
+            next_line = lines[line_nr + 1]
+
+            if 'Chapter' in curr_line and next_line == '\n':
+                is_number = re.compile(r'\d+$')  # Find number and only number
+                chapter_number = curr_line.split('Chapter')[1].strip()
+
+                if is_number.match(chapter_number):
+                    chapter += 1
+                    chapters.append("")
+            chapters[chapter] += curr_line
+        write_chapters_to_files(chapters)
+        return chapters
+
+
+def write_chapters_to_files(chapters):
+    index = 0
+    for chapter in chapters:
+        if index == 0:
+            with open("introduction", 'w', encoding='utf-8') as f:
+                f.write(chapter)
+                index += 1
+        else:
+            with open("chapter" + str(index), 'w', encoding='utf-8') as f:
+                f.write(chapter)
+                index += 1
 
 
 def main(argv):
