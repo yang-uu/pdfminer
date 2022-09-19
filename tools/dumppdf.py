@@ -130,6 +130,15 @@ def dumpallobjs(out, doc, mode=None):
 # dumpoutline
 
 
+def get_chapters_from_outline(file_name):
+    with open(file_name, 'rb') as fp:
+        parser = PDFParser(fp)
+        doc = PDFDocument(parser)
+        outlines = doc.get_outlines()
+        chapter_names = [chapter[1] for chapter in outlines if 'Chapter' in chapter[1]]
+        return chapter_names
+
+
 def dumpoutline(outfp, fname, objids, pagenos, password=b'',
                 dumpall=False, mode=None, extractdir=None):
     with open(fname, 'rb') as fp:
@@ -284,7 +293,8 @@ def main(argv):
         elif k == '-i':
             objids.extend(int(x) for x in v.split(','))
         elif k == '-o':
-            outfp = open(v, 'wb')
+            #outfp = open(v, 'wb')
+            outfp = open(v, 'w')
         elif k == '-r':
             mode = 'raw'
         elif k == '-b':

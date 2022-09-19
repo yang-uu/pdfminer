@@ -15,6 +15,8 @@ from typing import List, Tuple, Union, Set
 from dataclasses import dataclass
 from enum import Enum
 
+import re
+
 from pdfminer.pdfparser import PDFParser
 
 
@@ -34,6 +36,7 @@ class ConverterParams:
     scale: int = 1
     caching: bool = True
     showpageno: bool = True
+    get_chapters: bool = False
 
 
 class OutputType(Enum):
@@ -104,7 +107,12 @@ def handle_input_variables(
             ConverterParams.laparams.line_margin = float(v)
         elif k == '-F':
             ConverterParams.laparams.boxes_flow = float(v)
+        elif k == '-h':
+            ConverterParams.get_chapters = True
 
+        if ConverterParams.get_chapters:
+            split_by_chapters(filenames[0])
+            return
         convert_from_pdf(filenames, converter_params, outtype, outfile)
 
 
@@ -165,11 +173,12 @@ def convert_from_pdf(filenames: List[str],
     outfp.close()
 
 
+
 def main(argv):
     try:
         options, filenames = getopt.getopt(
             argv[1:],
-            'dP:o:t:O:c:s:R:Y:p:m:SCnAVM:W:L:F:'
+            'dP:o:t:O:c:s:R:Y:p:m:SCnAVM:W:L:F:h:'
         )
         handle_input_variables(options, filenames)
     except getopt.GetoptError:
