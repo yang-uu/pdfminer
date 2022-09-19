@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import logging
 import re
+from typing import Set, Tuple
 from .pdfdevice import PDFTextDevice
-from .pdffont import PDFUnicodeNotDefined
+from .pdffont import PDFFont, PDFTrueTypeFont, PDFType1Font, PDFUnicodeNotDefined, PDFCIDFont, PDFType3Font
 from .layout import LTContainer
 from .layout import LTPage
 from .layout import LTText
@@ -593,3 +594,29 @@ class XMLConverter(PDFConverter):
     def close(self):
         self.write_footer()
         return
+
+
+class FontExtractor(PDFLayoutAnalyzer):
+    def __init__(self, rsrcmgr):
+        super().__init__(self, rsrcmgr)
+        self._fontnames: Set[Tuple[str, str]] = set()
+        self.pageno = 1
+
+    def get_fontnames(self) -> Set[Tuple[str, str]]:
+        return self._fontnames
+
+    def get_font_type(self, font: PDFFont) -> str:
+        if isinstance(font, PDFType1Font):
+            return "Type 1"
+        elif isinstance(font, PDFTrueTypeFont):
+            return "TrueType"
+        elif isinstance(font, PDFType3Font):
+            return "Type 3"
+        elif isinstance(font, PDFCIDFont):
+            return "CID"
+
+        return "Unknown"
+
+    def render_char(self, matrix, font: PDFFont, fontsize, scaling, rise, cid):
+        self._fontnames.add((font.fontname, self.get_font_type(font)))
+        return super().render_char(matrix, font, fontsize, scaling, rise, cid)
