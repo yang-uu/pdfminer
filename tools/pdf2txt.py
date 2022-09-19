@@ -175,33 +175,34 @@ def convert_from_pdf(filenames: List[str],
     outfp.close()
 
 
-def split_by_chapters(file_name):
+def split_by_chapters(file_name: str) -> List[str]:
     if not file_name.endswith('.txt'):
         raise Exception("File type must be Text File")
     with open(file_name, 'r', encoding='utf-8') as f:
         lines = f.readlines()
-        chapter = 0
 
-        chapters = [""]
+    chapter = 0
 
-        for line_nr in range(0, len(lines) - 1):
+    chapters = [""]
 
-            curr_line = lines[line_nr]
-            next_line = lines[line_nr + 1]
+    for line_nr in range(0, len(lines) - 1):
 
-            if 'Chapter' in curr_line and next_line == '\n':
-                is_number = re.compile(r'\d+$')  # Find number and only number
-                chapter_number = curr_line.split('Chapter')[1].strip()
+        curr_line = lines[line_nr]
+        next_line = lines[line_nr + 1]
 
-                if is_number.match(chapter_number):
-                    chapter += 1
-                    chapters.append("")
-            chapters[chapter] += curr_line
+        if 'Chapter' in curr_line and next_line == '\n':
+            is_number = re.compile(r'\d+$')  # Find number and only number
+            chapter_number = curr_line.split('Chapter')[1].strip()
 
-        return chapters
+            if is_number.match(chapter_number):
+                chapter += 1
+                chapters.append("")
+        chapters[chapter] += curr_line
+
+    return chapters
 
 
-def write_chapters_to_files(chapters, path=''):
+def write_chapters_to_files(chapters: List[str], path=''):
     index = 0
     for chapter in chapters:
         chapter_name = 'introduction.txt' if index == 0 else 'chapter' + str(index) + '.txt'
