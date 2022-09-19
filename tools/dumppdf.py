@@ -248,11 +248,6 @@ def dumppdf(outfp, fname, objids, pagenos, password=b'',
     return
 
 
-def dumpfontnames(outfp, fname, objids, pagenos, password=b'',
-                  dumpall=False, mode=None, extractdir=None):
-    outfp.write('')
-
-
 # main
 def main(argv):
     import getopt
@@ -260,10 +255,10 @@ def main(argv):
     def usage():
         print(f'usage: {argv[0]}'
               '[-P password] [-a] [-p pageid] [-i objid] [-o output] '
-              '[-r|-b|-t] [-T] [-O output_dir] [-d] [-f] input.pdf ...')
+              '[-r|-b|-t] [-T] [-O output_dir] [-d] input.pdf ...')
         return 100
     try:
-        (opts, args) = getopt.getopt(argv[1:], 'dP:ap:i:o:rbtTO:f:')
+        (opts, args) = getopt.getopt(argv[1:], 'dP:ap:i:o:rbtTO:')
     except getopt.GetoptError:
         return usage()
     if not args:
@@ -301,8 +296,6 @@ def main(argv):
         elif k == '-O':
             extractdir = v
             proc = extractembedded
-        elif k == '-f':
-            proc = dumpfontnames
     #
     PDFDocument.debug = debug
     PDFParser.debug = debug
