@@ -94,7 +94,7 @@ It dumps all the internal contents in pseudo-XML format.
 
 pdffonts.py is used to extract font information from PDFs.
 
-    > pdffonts.py input.pdf ...
+    > pdffonts.py -P password input.pdf ...
 
 ## TODO
 
