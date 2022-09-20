@@ -2,25 +2,14 @@
 import logging
 import re
 from typing import Set, Tuple
+
+from .layout import (LTChar, LTContainer, LTCurve, LTFigure, LTImage, LTLine,
+                     LTPage, LTRect, LTText, LTTextBox, LTTextBoxVertical,
+                     LTTextGroup, LTTextLine)
 from .pdfdevice import PDFTextDevice
-from .pdffont import PDFFont, PDFTrueTypeFont, PDFType1Font, PDFUnicodeNotDefined, PDFCIDFont, PDFType3Font
-from .layout import LTContainer
-from .layout import LTPage
-from .layout import LTText
-from .layout import LTLine
-from .layout import LTRect
-from .layout import LTCurve
-from .layout import LTFigure
-from .layout import LTImage
-from .layout import LTChar
-from .layout import LTTextLine
-from .layout import LTTextBox
-from .layout import LTTextBoxVertical
-from .layout import LTTextGroup
-from .utils import apply_matrix_pt
-from .utils import mult_matrix
-from .utils import q
-from .utils import bbox2str
+from .pdffont import (PDFCIDFont, PDFFont, PDFTrueTypeFont, PDFType1Font,
+                      PDFType3Font, PDFUnicodeNotDefined)
+from .utils import apply_matrix_pt, bbox2str, mult_matrix, q
 
 
 # PDFLayoutAnalyzer
