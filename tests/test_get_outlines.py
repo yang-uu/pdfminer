@@ -1,11 +1,15 @@
 import unittest
+import os
 from tools import dumppdf
 
 
 class TestGetChaptersFromOutlines(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.course_book_pdf_file = '../samples/samples_for_chapter_retrieval/course_book_full.pdf'
+
+        self.course_book_pdf_file = os.path.join(
+            os.path.dirname(__file__), '../samples/samples_for_chapter_retrieval/course_book_full.pdf'
+        )
 
     def test_create_outline_length(self):
         chapter_names = dumppdf.get_chapters_from_outline(self.course_book_pdf_file)

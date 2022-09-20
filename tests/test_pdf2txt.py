@@ -119,8 +119,13 @@ class TestPdf2Text(unittest.TestCase):
 class TestPdf2Chapters(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.course_book_txt_file = '../samples/samples_for_chapter_retrieval/course_book_full.txt'
-        self.course_book_pdf_file = '../samples/samples_for_chapter_retrieval/course_book_full.pdf'
+
+        self.course_book_txt_file = os.path.join(
+            os.path.dirname(__file__), '../samples/samples_for_chapter_retrieval/course_book_full.txt'
+        )
+        self.course_book_pdf_file = os.path.join(
+            os.path.dirname(__file__), '../samples/samples_for_chapter_retrieval/course_book_full.pdf'
+        )
 
     def test_split_txt_file_by_chapters(self):
         chapters = split_by_chapters(self.course_book_txt_file)
