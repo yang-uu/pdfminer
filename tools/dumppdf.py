@@ -293,7 +293,6 @@ def main(argv):
         elif k == '-i':
             objids.extend(int(x) for x in v.split(','))
         elif k == '-o':
-            #outfp = open(v, 'wb')
             outfp = open(v, 'w')
         elif k == '-r':
             mode = 'raw'

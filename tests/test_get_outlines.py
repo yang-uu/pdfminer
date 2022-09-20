@@ -1,6 +1,4 @@
 import unittest
-from pdfminer.pdfdocument import PDFDocument
-from pdfminer.pdfparser import PDFParser
 from tools import dumppdf
 
 
