@@ -133,8 +133,11 @@ class TestPdf2Chapters(unittest.TestCase):
         self.assertEqual(len(chapters), expected_length)
 
     def test_write_chapters_to_txt_files(self):
+        test_chapter_path = os.path.join(
+            os.path.dirname(__file__), 'test_chapters/'
+        )
         chapters = split_by_chapters(self.course_book_txt_file)
-        write_chapters_to_files(chapters, path='test_chapters/')
+        write_chapters_to_files(chapters, path=test_chapter_path)
 
 
 if __name__ == '__main__':
