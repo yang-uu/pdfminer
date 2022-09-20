@@ -1,0 +1,697 @@
+ptg9926858From the Library of Brian WattersonWorking Effectively 
+with Legacy Code
+
+ptg9926858From the Library of Brian WattersonRobert C. Martin Series
+
+This series is directed at software developers, team-leaders,
+business analysts, and managers who want to increase their
+skills and proﬁciency to the level of a Master Craftsman.
+
+The series contains books that guide software professionals
+in the principles, patterns, and practices of programming,
+
+software project management, requirements gathering,
+
+design, analysis, testing, and others.
+
+ptg9926858From the Library of Brian WattersonWorking Effectively 
+with Legacy Code
+
+Michael C. Feathers
+
+Prentice Hall Professional Technical Reference
+Upper Saddle River, NJ 07458
+www,phptr.com
+
+ptg9926858From the Library of Brian WattersonThe authors and publisher have taken care in the preparation of this book, but
+make no expressed or implied warranty of any kind and assume no responsibil-
+ity for errors or omissions. No liability is assumed for incidental or consequen-
+tial damages in connection with or arising out of the use of the information or
+programs contained herein.
+Publisher: John Wait
+Editor in Chief: Don O’Hagan
+Acquisitions Editor: Paul Petralia
+Editorial Assistant: Michelle Vincenti
+Marketing Manager: Chris Guzikowski
+Publicist: Kerry Guiliano
+Cover Designer: Sandra Schroeder
+Managing Editor: Gina Kanouse
+Senior Project Editor: Lori Lyons
+Copy Editor: Krista Hansing
+Indexer: Lisa Stumpf
+Compositor: Karen Kennedy
+Proofreader: Debbie Williams
+Manufacturing Buyer: Dan Uhrig 
+Prentice Hall offers excellent discounts on this book when ordered in quantity for bulk
+purchases or special sales, which may include electronic versions and/or custom covers
+and content particular to your business, training goals, marketing focus, and branding in-
+terests. For more information, please contact:
+
+U. S. Corporate and Government Sales
+1-800-382-3419
+corpsales@pearsontechgroup.com
+
+For sales outside the U. S., please contact:
+
+International Sales
+1-317-428-3341
+international@pearsontechgroup.com
+
+Visit us on the web: www.phptr.com
+Library of Congress Cataloging-in-Publication Data: 2004108115
+Copyright © 2005 Pearson Education, Inc.
+Publishing as Prentice Hall PTR
+All rights reserved. Printed in the United States of America. This publication is protected
+by copyright, and permission must be obtained from the publisher prior to any prohibited
+reproduction, storage in a retrieval system, or transmission in any form or by any means,
+electronic, mechanical, photocopying, recording, or likewise. For information regarding
+permissions, write to:
+
+Pearson Education, Inc.
+Rights and Contracts Department
+One Lake Street
+Upper Saddle River, NJ   07458
+
+Other product or company names mentioned herein are the trademarks 
+or registered trademarks of their respective owners.
+ISBN 0-13-117705-2
+
+Text printed in the United States on recycled paper at Phoenix Book Tech.
+First printing, September 2004
+
+ptg9926858From the Library of Brian WattersonFor Ann, Deborah, and Ryan, 
+the bright centers of my life.
+
+— Michael
+
+ptg9926858From the Library of Brian WattersonThis page intentionally left blank 
+
+ptg9926858From the Library of Brian WattersonCONTENTS
+
+vii
+
+Contents
+
+Foreword by Robert C. Martin. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  xv
+
+Preface . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  xv
+
+Introduction . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   xxi
+
+PART I: The Mechanics of Change. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  1
+
+Chapter 1: Changing Software . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  3
+Four Reasons to Change Software   . . . . . . . . . . . . . . . . . . . . . . . . . .  4
+Risky Change  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  7
+
+Chapter 2: Working with Feedback  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  9 
+What Is Unit Testing?  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  12
+Higher-Level Testing  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  14
+Test Coverings   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  14
+The Legacy Code Change Algorithm   . . . . . . . . . . . . . . . . . . . . . . .  18
+
+Chapter 3: Sensing and Separation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  21
+Faking Collaborators  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  23
+
+Chapter 4: The Seam Model. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  29
+A Huge Sheet of Text  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  29
+Seams  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  30
+Seam Types  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  33
+
+Chapter 5: Tools. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  45
+Automated Refactoring Tools  . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  45
+Mock Objects  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  47
+Unit-Testing Harnesses  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  48
+General Test Harnesses  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  53
+
+ptg9926858From the Library of Brian Wattersonviii
+
+CONTENTS
+
+PART II: Changing Software   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .55
+
+Chapter 6: I Don’t Have Much Time and I Have to Change It. . . . . . . . . . .  57
+Sprout Method . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .59
+Sprout Class . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .63
+Wrap Method   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .67
+Wrap Class . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .71
+Summary. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  76
+
+Chapter 7: It Takes Forever to Make a Change . . . . . . . . . . . . . . . . . . . . . .  77
+Understanding  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .77
+Lag Time  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .78
+Breaking Dependencies   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .79
+Summary  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .85
+
+Chapter 8: How Do I Add a Feature?  . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  87
+Test-Driven Development (TDD)  . . . . . . . . . . . . . . . . . . . . . . . . . . .88
+Programming by Difference  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .94
+Summary  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .104
+
+Chapter 9: I Can’t Get This Class into a Test Harness . . . . . . . . . . . . . . . .  105
+The Case of the Irritating Parameter   . . . . . . . . . . . . . . . . . . . . . . .106
+The Case of the Hidden Dependency  . . . . . . . . . . . . . . . . . . . . . . .113
+The Case of the Construction Blob   . . . . . . . . . . . . . . . . . . . . . . . .116
+The Case of the Irritating Global Dependency  . . . . . . . . . . . . . . . .118
+The Case of the Horrible Include Dependencies  . . . . . . . . . . . . . . .127
+The Case of the Onion Parameter   . . . . . . . . . . . . . . . . . . . . . . . . .130
+The Case of the Aliased Parameter . . . . . . . . . . . . . . . . . . . . . . . . .133
+
+Chapter 10: I Can’t Run This Method in a Test Harness . . . . . . . . . . . . . .  137
+The Case of the Hidden Method   . . . . . . . . . . . . . . . . . . . . . . . . . .138
+The Case of the “Helpful” Language Feature . . . . . . . . . . . . . . . . .141
+The Case of the Undetectable Side Effect  . . . . . . . . . . . . . . . . . . . .144
+
+Chapter 11: I Need to Make a Change. What Methods Should I Test?  . . .  151
+Reasoning About Effects   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .151
+Reasoning Forward  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .157
+Effect Propagation  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .163
+Tools for Effect Reasoning  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .165
+Learning from Effect Analysis   . . . . . . . . . . . . . . . . . . . . . . . . . . . .167
+Simplifying Effect Sketches . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .168
+
+ptg9926858From the Library of Brian WattersonCONTENTS
+
+ix
+
+Chapter 12: I Need to Make Many Changes in One Area. . . . . . . . . . . . . .  173
+Interception Points  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  174
+Judging Design with Pinch Points  . . . . . . . . . . . . . . . . . . . . . . . . .  182
+Pinch Point Traps  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  184
+
+Chapter 13: I Need to Make a Change, 
+
+but I Don’t Know What Tests to Write . . . . . . . . . . . . . . . . . .  185
+Characterization Tests   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  186
+Characterizing Classes   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  189
+Targeted Testing  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  190
+A Heuristic for Writing Characterization Tests  . . . . . . . . . . . . . . .  195
+
+Chapter 14: Dependencies on Libraries Are Killing Me  . . . . . . . . . . . . . . .  197
+
+Chapter 15: My Application Is All API Calls  . . . . . . . . . . . . . . . . . . . . . . .  199
+
+Chapter 16: I Don’t Understand the Code Well Enough to Change It  . . . .  209
+Notes/Sketching  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  210
+Listing Markup . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  211
+Scratch Refactoring   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  212
+Delete Unused Code  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  213
+
+Chapter 17: My Application Has No Structure  . . . . . . . . . . . . . . . . . . . . .  215
+Telling the Story of the System  . . . . . . . . . . . . . . . . . . . . . . . . . . .  216
+Naked CRC  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  220
+Conversation Scrutiny   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  224
+
+Chapter 18: My Test Code Is in the Way  . . . . . . . . . . . . . . . . . . . . . . . . . .  227
+Class Naming Conventions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  227
+Test Location  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  228
+
+Chapter 19: My Project Is Not Object Oriented. 
+
+How Do I Make Safe Changes?. . . . . . . . . . . . . . . . . . . . . . . .  231
+An Easy Case  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  232
+A Hard Case . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  232
+Adding New Behavior   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  236
+Taking Advantage of Object Orientation   . . . . . . . . . . . . . . . . . . .  239
+It’s All Object Oriented . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  242
+
+Chapter 20: This Class Is Too Big and I Don’t Want It to Get Any Bigger .  245
+Seeing Responsibilities   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  249
+
+ptg9926858From the Library of Brian Wattersonx
+
+CONTENTS
+
+Other Techniques . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .265
+Moving Forward  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .265
+After Extract Class . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .268
+
+Chapter 21: I’m Changing the Same Code All Over the Place  . . . . . . . . . .  269
+First Steps   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .272
+
+Chapter 22: I Need to Change a Monster Method 
+
+and I Can’t Write Tests for It  . . . . . . . . . . . . . . . . . . . . . . . . .  289
+Varieties of Monsters  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .290
+Tackling Monsters with Automated Refactoring Support   . . . . . . .294
+The Manual Refactoring Challenge  . . . . . . . . . . . . . . . . . . . . . . . .297
+Strategy  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .304
+
+Chapter 23: How Do I Know That I’m Not Breaking Anything?. . . . . . . .  309
+Hyperaware Editing  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .310
+Single-Goal Editing   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .311
+Preserve Signatures . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .312
+Lean on the Compiler   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .315
+
+Chapter 24: We Feel Overwhelmed. It Isn’t Going to Get Any Better. . . . . .319
+
+PART III: Dependency-Breaking Techniques  . . . . . . . . . . . . . . . . . . . .323
+
+Chapter 25: Dependency-Breaking Techniques  . . . . . . . . . . . . . . . . . . . . .  325
+Adapt Parameter   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .326
+Break Out Method Object  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .330
+Deﬁnition Completion  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .337
+Encapsulate Global References . . . . . . . . . . . . . . . . . . . . . . . . . . . .339
+Expose Static Method   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .345
+Extract and Override Call   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .348
+Extract and Override Factory Method  . . . . . . . . . . . . . . . . . . . . . .350
+Extract and Override Getter . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .352
+Extract Implementer   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .356
+Extract Interface   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .362
+Introduce Instance Delegator  . . . . . . . . . . . . . . . . . . . . . . . . . . . . .369
+Introduce Static Setter   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .372
+Link Substitution  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .377
+Parameterize Constructor . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .379
+Parameterize Method  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .383
+
+ptg9926858From the Library of Brian WattersonCONTENTS
+
+xi
+
+Primitivize Parameter  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  385
+Pull Up Feature . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  388
+Push Down Dependency  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  392
+Replace Function with Function Pointer  . . . . . . . . . . . . . . . . . . . .  396
+Replace Global Reference with Getter   . . . . . . . . . . . . . . . . . . . . .  399
+Subclass and Override Method  . . . . . . . . . . . . . . . . . . . . . . . . . . .  401
+Supersede Instance Variable   . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  404
+Template Redeﬁnition . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  408
+Text Redeﬁnition   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  412
+
+Appendix: Refactoring . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  415
+Extract Method   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  415
+
+Glossary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  421
+
+Index  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  423
+
+ptg9926858From the Library of Brian WattersonThis page intentionally left blank 
+
+ptg9926858From the Library of Brian WattersonFOREWORD
+
+xiii
+
+Foreword 
+
+“…then it began…”
+In  his  introduction  to  this  book,  Michael  Feathers  uses  that  phrase  to
+
+describe the start of his passion for software.
+
+“…then it began…”
+Do you know that feeling? Can you point to a single moment in your life and
+say: “…then it began…”? Was there a single event that changed the course of
+your life and eventually led you to pick up this book and start reading this fore-
+word?
+
+I was in sixth grade when it happened to me. I was interested in science and
+space and all things technical. My mother found a plastic computer in a catalog
+and ordered it for me. It was called Digi-Comp I. Forty years later that little
+plastic computer holds a place of honor on my bookshelf. It was the catalyst
+that sparked my enduring passion for software. It gave me my ﬁrst inkling of
+how joyful it is to write programs that solve problems for people. It was just
+three  plastic  S-R  ﬂip-ﬂops  and  six  plastic  and-gates,  but  it  was  enough—it
+served. Then… for me… it began…
+
+But the joy I felt soon became tempered by the realization that software sys-
+tems  almost  always  degrade  into  a  mess.  What  starts  as  a  clean  crystalline
+design  in  the  minds  of  the  programmers  rots,  over  time,  like  a  piece  of  bad
+meat. The nice little system we built last year turns into a horrible morass of
+tangled functions and variables next year.
+
+Why does this happen? Why do systems rot? Why can’t they stay clean?
+Sometimes we blame our customers. Sometimes we accuse them of changing
+the requirements. We comfort ourselves with the belief that if the customers had
+just been happy with what they said they needed, the design would have been
+ﬁne. It’s the customer’s fault for changing the requirements on us.
+
+Well, here’s a news ﬂash: Requirements change. Designs that cannot tolerate
+changing requirements are poor designs to begin with. It is the goal of every
+competent software developer to create designs that tolerate change.
+
+This seems to be an intractably hard problem to solve. So hard, in fact, that
+nearly every system ever produced suffers from slow, debilitating rot. The rot is
+so pervasive that we’ve come up with a special name for rotten programs. We
+call them: Legacy Code.
+
+ptg9926858From the Library of Brian Wattersonxiv
+
+FOREWORD
+
+Legacy code. The phrase strikes disgust in the hearts of programmers. It con-
+jures images of slogging through a murky swamp of tangled undergrowth with
+leaches beneath and stinging ﬂies above. It conjures odors of murk, slime, stag-
+nancy, and offal. Although our ﬁrst joy of programming may have been intense,
+the  misery  of  dealing  with  legacy  code  is  often  sufﬁcient  to  extinguish  that
+ﬂame.
+
+Many of us have tried to discover ways to prevent code from becoming leg-
+acy.  We’ve  written  books  on  principles,  patterns,  and  practices  that  can  help
+programmers keep their systems clean. But Michael Feathers had an insight that
+many of the rest of us missed. Prevention is imperfect. Even the most disciplined
+development team, knowing the best principles, using the best patterns, and fol-
+lowing the best practices will create messes from time to time. The rot still accu-
+mulates.  It’s  not  enough  to  try  to  prevent  the  rot—you  have  to  be  able  to
+reverse it.
+
+That’s what this book is about. It’s about reversing the rot. It’s about taking
+a tangled, opaque, convoluted system and slowly, gradually, piece by piece, step
+by  step,  turning  it  into  a  simple,  nicely  structured,  well-designed  system.  It’s
+about reversing entropy. 
+
+Before you get too excited, I warn you; reversing rot is not easy, and it’s not
+quick. The techniques, patterns, and tools that Michael presents in this book
+are effective, but they take work, time, endurance, and care. This book is not a
+magic bullet. It won’t tell you how to eliminate all the accumulated rot in your
+systems overnight. Rather, this book describes a set of disciplines, concepts, and
+attitudes that you will carry with you for the rest of your career and that will
+help  you  to  turn  systems  that  gradually  degrade  into  systems  that  gradually
+improve.
+
+Robert C. Martin
+29 June, 2004
+
+ptg9926858From the Library of Brian WattersonPREFACE
+
+xv
+
+Preface
+
+Do you remember the ﬁrst program you wrote? I remember mine. It was a little
+graphics  program  I  wrote  on  an  early  PC.  I  started  programming  later  than
+most  of  my  friends.  Sure,  I’d  seen  computers  when  I  was  a  kid.  I  remember
+being really impressed by a minicomputer I once saw in an ofﬁce, but for years
+I never had a chance to even sit at a computer. Later, when I was a teenager,
+some friends of mine bought a couple of the ﬁrst TRS-80s. I was interested, but
+I was actually a bit apprehensive, too. I knew that if I started to play with com-
+puters, I’d get sucked into it. It just looked too cool. I don’t know why I knew
+myself  so  well,  but  I  held  back.  Later,  in  college,  a  roommate  of  mine  had  a
+computer, and I bought a C compiler so that I could teach myself programming.
+Then it began. I stayed up night after night trying things out, poring through
+the source code of the emacs editor that came with the compiler. It was addic-
+tive, it was challenging, and I loved it.
+
+I hope you’ve had experiences like this—just the raw joy of making things
+work on a computer. Nearly every programmer I ask has. That joy is part of
+what got us into this work, but where is it day to day? 
+
+A few years ago, I gave my friend Erik Meade a call after I’d ﬁnished work
+one night. I knew that Erik had just started a consulting gig with a new team, so
+I  asked  him,  “How  are  they  doing?”  He  said,  “They’re  writing  legacy  code,
+man.” That was one of the few times in my life when I was sucker-punched by
+a coworker’s statement. I felt it right in my gut. Erik had given words to the pre-
+cise feeling that I often get when I visit teams for the ﬁrst time. They are trying
+very hard, but at the end of the day, because of schedule pressure, the weight of
+history, or a lack of any better code to compare their efforts to, many people
+are writing legacy code.
+
+What is legacy code? I’ve used the term without deﬁning it. Let’s look at the
+strict  deﬁnition:  Legacy  code  is  code  that  we’ve  gotten  from  someone  else.
+Maybe our company acquired code from another company; maybe people on
+the original team moved on to other projects. Legacy code is somebody else’s
+code.  But  in  programmer-speak,  the  term  means  much  more  than  that.  The
+term legacy code has taken on more shades of meaning and more weight over
+time.
+
+ptg9926858From the Library of Brian Wattersonxvi
+
+PREFACE
+
+What do you think about when you hear the term legacy code? If you are at
+all like me, you think of tangled, unintelligible structure, code that you have to
+change but don’t really understand. You think of sleepless nights trying to add
+in  features  that  should  be  easy  to  add,  and  you  think  of  demoralization,  the
+sense that everyone on the team is so sick of a code base that it seems beyond
+care, the sort of code that you just wish would die. Part of you feels bad for
+even thinking about making it better. It seems unworthy of your efforts. That
+deﬁnition  of  legacy  code  has  nothing  to  do  with  who  wrote  it.  Code  can
+degrade in many ways, and many of them have nothing to do with whether the
+code came from another team. 
+
+In the industry, legacy code is often used as a slang term for difﬁcult-to-change
+code that we don’t understand. But over years of working with teams, helping
+them get past serious code problems, I’ve arrived at a different deﬁnition. 
+
+To me, legacy code is simply code without tests. I’ve gotten some grief for
+this deﬁnition. What do tests have to do with whether code is bad? To me, the
+answer  is  straightforward,  and  it  is  a  point  that  I  elaborate  throughout  the
+book:
+
+Code without tests is bad code. It doesn’t matter how well written it is; it doesn’t mat-
+ter how pretty or object-oriented or well-encapsulated it is. With tests, we can change
+the behavior of our code quickly and veriﬁably. Without them, we really don’t know
+if our code is getting better or worse. 
+
+You might think that this is severe. What about clean code? If a code base is
+very clean and well structured, isn’t that enough? Well, make no mistake. I love
+clean  code.  I  love  it  more  than  most  people  I  know,  but  while  clean  code  is
+good, it’s not enough. Teams take serious chances when they try to make large
+changes  without  tests.  It  is  like  doing  aerial  gymnastics  without  a  net.  It
+requires incredible skill and a clear understanding of what can happen at every
+step. Knowing precisely what will happen if you change a couple of variables is
+often like knowing whether another gymnast is going to catch your arms after
+you come out of a somersault. If you are on a team with code that clear, you are
+in  a  better  position  than  most  programmers.  In  my  work,  I’ve  noticed  that
+teams with that degree of clarity in all of their code are rare. They seem like a
+statistical anomaly. And, you know what? If they don’t have supporting tests,
+their code changes still appear to be slower than those of teams that do. 
+
+Yes, teams do get better and start to write clearer code, but it takes a long
+time  for  older  code  to  get  clearer.  In  many  cases,  it  will  never  happen  com-
+pletely. Because of this, I have no problem deﬁning legacy code as code without
+tests. It is a good working deﬁnition, and it points to a solution.
+
+I’ve been talking about tests quite a bit so far, but this book is not about test-
+ing.  This  book  is  about  being  able  to  conﬁdently  make  changes  in  any  code
+
+ptg9926858From the Library of Brian WattersonPREFACE
+
+xvii
+
+base. In the following chapters, I describe techniques that you can use to under-
+stand code, get it under test, refactor it, and add features.
+
+One thing that you will notice as you read this book is that it is not a book
+about pretty code. The examples that I use in the book are fabricated because I
+work under nondisclosure agreements with clients. But in many of the exam-
+ples, I’ve tried to preserve the spirit of code that I’ve seen in the ﬁeld. I won’t
+say  that  the  examples  are  always  representative.  There  certainly  are  oases  of
+great  code  out  there,  but,  frankly,  there  are  also  pieces  of  code  that  are  far
+worse than anything I can use as an example in this book. Aside from client
+conﬁdentiality, I simply couldn’t put code like that in this book without boring
+you to tears and burying important points in a morass of detail. As a result,
+many of the examples are relatively brief. If you look at one of them and think
+“No, he doesn’t understand—my methods are much larger than that and much
+worse,”  please  look  at  the  advice  that  I  am  giving  at  face  value  and  see  if  it
+applies, even if the example seems simpler. 
+
+The techniques here have been tested on substantially large pieces of code. It
+is just a limitation of the book format that makes examples smaller. In particu-
+lar, when you see ellipses (…) in a code fragment like this, you can read them as
+“insert 500 lines of ugly code here”:
+
+m_pDispatcher->register(listener);
+...
+m_nMargins++;
+
+If this book is not about pretty code, it is even less about pretty design. Good
+design should be a goal for all of us, but in legacy code, it is something that we
+arrive at in discrete steps. In some of the chapters, I describe ways of adding
+new code to existing code bases and show how to add it with good design prin-
+ciples in mind. You can start to grow areas of very good high-quality code in
+legacy code bases, but don’t be surprised if some of the steps you take to make
+changes involve making some code slightly uglier. This work is like surgery. We
+have  to  make  incisions,  and  we  have  to  move  through  the  guts  and  suspend
+some aesthetic judgment. Could this patient’s major organs and viscera be bet-
+ter than they are? Yes. So do we just forget about his immediate problem, sew
+him up again, and tell him to eat right and train for a marathon? We could, but
+what we really need to do is take the patient as he is, ﬁx what’s wrong, and
+move him to a healthier state. He might never become an Olympic athlete, but
+we can’t let “best” be the enemy of “better.” Code bases can become healthier
+and easier to work in. When a patient feels a little better, often that is the time
+when  you  can  help  him  make  commitments  to  a  healthier  life  style.  That  is
+what we are shooting for with legacy code. We are trying to get to the point at
+
+ptg9926858From the Library of Brian Wattersonxviii
+
+PREFACE
+
+which  we  are  used  to  ease;  we  expect  it  and  actively  attempt  to  make  code
+change easier. When we can sustain that sense on a team, design gets better.
+
+The  techniques  I  describe  are  ones  that  I’ve  discovered  and  learned  with
+coworkers and clients over the course of years working with clients to try to
+establish control over unruly code bases. I got into this legacy code emphasis
+accidentally. When I ﬁrst started working with Object Mentor, the bulk of my
+work  involved  helping  teams  with  serious  problems  develop  their  skills  and
+interactions to the point that they could regularly deliver quality code. We often
+used Extreme Programming practices to help teams take control of their work,
+collaborate  intensively,  and  deliver.  I  often  feel  that  Extreme  Programming  is
+less a way to develop software than it is a way to make a well-jelled work team
+that just happens to deliver great software every two weeks.
+
+From  the  beginning,  though,  there  was  a  problem.  Many  of  the  ﬁrst  XP
+projects  were  “greenﬁeld”  projects.  The  clients  I  was  seeing  had  signiﬁcantly
+large code bases, and they were in trouble. They needed some way to get con-
+trol of their work and start to deliver. Over time, I found that I was doing the
+same  things  over  and  over  again  with  clients.  This  sense  culminated  in  some
+work  I  was  doing  with  a  team  in  the  ﬁnancial  industry.  Before  I’d  arrived,
+they’d realized that unit testing was a great thing, but the tests that they were
+executing  were  full  scenario  tests  that  made  multiple  trips  to  a  database  and
+exercised  large  chunks  of  code.  The  tests  were  hard  to  write,  and  the  team
+didn’t run them very often because they took so long to run. As I sat down with
+them to break dependencies and get smaller chunks of code under test, I had a
+terrible sense of déjà vu. It seemed that I was doing this sort of work with every
+team  I  met,  and  it  was  the  sort  of  thing  that  no  one  really  wanted  to  think
+about. It was just the grunge work that you do when you want to start working
+with your code in a controlled way, if you know how to do it. I decided then
+that it was worth really reﬂecting on how we were solving these problems and
+writing them down so that teams could get a leg up and start to make their code
+bases easier to live in.
+
+A note about the examples: I’ve used examples in several different program-
+ming languages. The bulk of the examples are written in Java, C++, and C. I
+picked Java because it is a very common language, and I included C++ because it
+presents some special challenges in a legacy environment. I picked C because it
+highlights many of the problems that come up in procedural legacy code. Among
+them, these languages cover much of the spectrum of concerns that arise in leg-
+acy code. However, if the languages you use are not covered in the examples,
+take a look at them anyway. Many of the techniques that I cover can be used in
+other languages, such as Delphi, Visual Basic, COBOL, and FORTRAN. 
+
+ptg9926858From the Library of Brian WattersonPREFACE
+
+xix
+
+I hope that you ﬁnd the techniques in this book helpful and that they allow
+you to get back to what is fun about programming. Programming can be very
+rewarding and enjoyable work. If you don’t feel that in your day-to-day work, I
+hope that the techniques I offer you in this book help you ﬁnd it and grow it on
+your team.
+
+Acknowledgments
+
+First of all, I owe a serious debt to my wife, Ann, and my children, Deborah
+and Ryan. Their love and support made this book and all of the learning that
+preceded it possible. I’d also like to thank “Uncle Bob” Martin, president and
+founder  of  Object  Mentor.  His  rigorous  pragmatic  approach  to  development
+and design, separating the critical from the inconsequential, gave me something
+to  latch  upon  about  10  years  ago,  back  when  it  seemed  that  I  was  about  to
+drown  in  a  wave  of  unrealistic  advice.  And  thanks,  Bob,  for  giving  me  the
+opportunity  to  see  more  code  and  work  with  more  people  over  the  past  ﬁve
+years than I ever imagined possible.
+
+I also have to thank Kent Beck, Martin Fowler, Ron Jeffries, and Ward Cun-
+ningham  for  offering  me  advice  at  times  and  teaching  me  a  great  deal  about
+team work, design, and programming. Special thanks to all of the people who
+reviewed the drafts. The ofﬁcial reviewers were Sven Gorts, Robert C. Martin,
+Erik  Meade,  and  Bill  Wake;  the  unofﬁcial  reviewers  were  Dr.  Robert  Koss,
+James Grenning, Lowell Lindstrom, Micah Martin, Russ Rufer and the Silicon
+Valley Patterns Group, and James Newkirk.
+
+Thanks  also  to  reviewers  of  the  very  early  drafts  I  placed  on  the  Internet.
+Their  feedback  signiﬁcantly  affected  the  direction  of  the  book  after  I  reorga-
+nized its format. I apologize in advance to any of you I may have left out. The
+early  reviewers  were:  Darren  Hobbs,  Martin  Lippert,  Keith  Nicholas,  Phlip
+Plumlee, C. Keith Ray, Robert Blum, Bill Burris, William Caputo, Brian Mar-
+ick,  Steve  Freeman,  David  Putman,  Emily  Bache,  Dave  Astels,  Russel  Hill,
+Christian Sepulveda, and Brian Christopher Robinson.
+
+Thanks also to Joshua Kerievsky who gave a key early review and Jeff Langr
+
+who helped with advice and spot reviews all through the process. 
+
+The reviewers helped me polish the draft considerably, but if there are errors
+
+remaining, they are solely mine.
+
+Thanks to Martin Fowler, Ralph Johnson, Bill Opdyke, Don Roberts, and
+
+John Brant for their work in the area of refactoring. It has been inspirational.
+
+ptg9926858From the Library of Brian Wattersonxx
+
+PREFACE
+
+I also owe a special debt to Jay Packlick, Jacques Morel, and Kelly Mower of
+Sabre Holdings, and Graham Wright of Workshare Technology for their support
+and feedback.
+
+Special  thanks  also  to  Paul  Petralia,  Michelle  Vincenti,  Lori  Lyons,  Krista
+Hansing, and the rest of the team at Prentice-Hall. Thank you, Paul, for all of
+the help and encouragement that this ﬁrst-time author needed.
+
+Special thanks also to Gary and Joan Feathers, April Roberts, Dr. Raimund
+Ege, David Lopez de Quintana, Carlos Perez, Carlos M. Rodriguez, and the late
+Dr. John C. Comfort for help and encouragement over the years. I also have to
+thank  Brian  Button  for  the  example  in  Chapter  21,  I’m  Changing  the  Same
+Code All Over the Place. He wrote that code in about an hour when we were
+developing a refactoring course together, and it’s become my favorite piece of
+teaching code.
+
+Also, special thanks to Janik Top, whose instrumental De Futura served as
+
+the soundtrack for my last few weeks of work on this book.
+
+Finally, I’d like to thank everyone whom I’ve worked with over the past few
+
+years whose insights and challenges strengthened the material in this book.
+
+Michael Feathers
+mfeathers@objectmentor.com
+www.objectmentor.com
+www.michaelfeathers.com
+
+ptg9926858From the Library of Brian WattersonIntroduction
+
+How to Use This Book
+
+I tried several different formats before settling on the current one for this book.
+Many of the different techniques and practices that are useful when working
+with legacy code are hard to explain in isolation. The simplest changes often go
+easier if you can ﬁnd seams, make fake objects, and break dependencies using a
+couple  of  dependency-breaking  techniques.  I  decided  that  the  easiest  way  to
+make  the  book  approachable  and  handy  would  be  to  organize  the  bulk  of  it
+(Part  II,  Changing  Software)  in  FAQ  (frequently  asked  questions)  format.
+Because speciﬁc techniques often require the use of other techniques, the FAQ
+chapters are heavily interlinked. In nearly every chapter, you’ll ﬁnd references,
+along with page numbers, for other chapters and sections that describe particu-
+lar  techniques  and  refactorings.  I  apologize  if  this  causes  you  to  ﬂip  wildly
+through  the  book  as  you  attempt  to  ﬁnd  answers  to  your  questions,  but  I
+assumed that you’d rather do that than read the book cover to cover, trying to
+understand how all the techniques operate.
+
+In  Changing  Software,  I’ve  tried  to  address  very  common  questions  that
+come  up  in  legacy  code  work.  Each  of  the  chapters  is  named  after  a  speciﬁc
+problem. This does make the chapter titles rather long, but hopefully, they will
+allow you to quickly ﬁnd a section that helps you with the particular problems
+you are having.
+
+Changing Software is bookended by a set of introductory chapters (Part I,
+The Mechanics of Change) and a catalog of refactorings, which are very useful
+in legacy code work (Part III, Dependency-Breaking Techniques). Please read
+the  introductory  chapters,  particularly  Chapter  4,  The  Seam  Model.  These
+chapters provide the context and nomenclature for all the techniques that fol-
+low. In addition, if you ﬁnd a term that isn’t described in context, look for it in
+the Glossary.
+
+The refactorings in Dependency-Breaking Techniques are special in that they
+are  meant  to  be  done  without  tests,  in  the  service  of  putting  tests  in  place.  I
+encourage you to read each of them so that you can see more possibilities as
+you start to tame your legacy code.
+
+xxi
+
+ptg9926858From the Library of Brian WattersonThis page intentionally left blank 
+
+ptg9926858From the Library of Brian WattersonPart I 
+
+The Mechanics 
+of Change
+
+The 
+Mechanics 
+of Change
+
+ptg9926858From the Library of Brian WattersonThis page intentionally left blank 
+
