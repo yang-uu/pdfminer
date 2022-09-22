@@ -12,7 +12,7 @@ def get_fontnames(filenames: List[str], password: bytes = b'') -> Set[Tuple[str,
     for fname in filenames:
         with open(fname, 'rb') as fp:
             rsrcmgr = PDFResourceManager()
-            device = FontExtractor(rsrcmgr)
+            device = FontExtractor()
             interpreter = PDFPageInterpreter(rsrcmgr, device)
             for page in PDFPage.get_pages(fp, password=password):
                 interpreter.process_page(page)

@@ -585,9 +585,9 @@ class XMLConverter(PDFConverter):
         return
 
 
-class FontExtractor(PDFLayoutAnalyzer):
-    def __init__(self, rsrcmgr):
-        super().__init__(self, rsrcmgr)
+class FontExtractor(PDFTextDevice):
+    def __init__(self):
+        super().__init__(self)
         self._fontnames: Set[Tuple[str, str]] = set()
         self.pageno = 1
 
