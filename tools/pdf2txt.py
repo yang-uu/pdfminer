@@ -50,7 +50,7 @@ def _print_help_message(command: str = ""):
     print(f'usage: {command} [-P password] [-o output] [-t text|html|xml|tag]'
           ' [-O output_dir] [-c encoding] [-s scale] [-R rotation]'
           ' [-Y normal|loose|exact] [-p pagenos] [-m maxpages]'
-          ' [-S] [-C] [-n] [-A] [-V] [-M char_margin] [-L line_margin]'
+          ' [-S] [-C] [-n] [-A] [-V] [-h] [-M char_margin] [-L line_margin]'
           ' [-W word_margin] [-F boxes_flow] [-d] input.pdf ...')
 
 

@@ -44,7 +44,7 @@ restricted PDF documents.
     > pdf2txt.py [-P password] [-o output] [-t text|html|xml|tag]
                  [-O output_dir] [-c encoding] [-s scale] [-R rotation]
                  [-Y normal|loose|exact] [-p pagenos] [-m maxpages]
-                 [-S] [-C] [-n] [-A] [-V]
+                 [-S] [-C] [-n] [-A] [-V] [-h]
                  [-M char_margin] [-L line_margin] [-W word_margin]
                  [-F boxes_flow] [-d]
                  input.pdf ...
@@ -64,11 +64,12 @@ restricted PDF documents.
   * `-n` : Disables layout analysis.
   * `-A` : Applies layout analysis for all texts including figures.
   * `-V` : Automatically detects vertical writing.
-  * `-M char_margin` : Speficies the char margin.
-  * `-W word_margin` : Speficies the word margin.
-  * `-L line_margin` : Speficies the line margin.
-  * `-F boxes_flow` : Speficies the box flow ratio.
+  * `-M char_margin` : Specifies the char margin.
+  * `-W word_margin` : Specifies the word margin.
+  * `-L line_margin` : Specifies the line margin.
+  * `-F boxes_flow` : Specifies the box flow ratio.
   * `-d` : Turns on Debug output.
+  * `-h` : Separates the output text into different files based on chapters.
 
 ### dumppdf.py
 
