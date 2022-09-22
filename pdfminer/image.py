@@ -7,6 +7,8 @@ from .pdftypes import LITERALS_DCT_DECODE
 from .pdfcolor import LITERAL_DEVICE_GRAY
 from .pdfcolor import LITERAL_DEVICE_RGB
 from .pdfcolor import LITERAL_DEVICE_CMYK
+from PIL import Image
+from PIL import ImageChops
 
 
 def align32(x):
@@ -77,23 +79,21 @@ class BMPWriter:
         return
 
 class PngWriter:
-    def __init__(self, fp, width, height, color):
+    def __init__(self, fp, width, height):
         self.fp = fp
         self.width = width
         self.height = height
-        self.color = color
 
     def write(self, data):
-        from PIL import Image
         
         r = data[0::3]
         g = data[1::3]
         b = data[2::3]
-        img = Image.new(self.color, (self.width, self.height))
+        img = Image.new("RGB", (self.width, self.height))
 
         rgb_vals = list(zip(r, g, b))
         img.putdata(rgb_vals)
-        img.save(self.fp.name)
+        img.save(self.fp)
 
 
 # ImageWriter
@@ -131,8 +131,6 @@ class ImageWriter:
             if ext == '.jpg':
                 raw_data = stream.get_rawdata()
                 if LITERAL_DEVICE_CMYK in image.colorspace:
-                    from PIL import Image
-                    from PIL import ImageChops
                     ifp = BytesIO(raw_data)
                     i = Image.open(ifp)
                     i = ImageChops.invert(i)
@@ -150,7 +148,7 @@ class ImageWriter:
                     i += width
             elif image.bits == 8 and image.colorspace[0] == LITERAL_DEVICE_RGB:
                 if self.png_mode:
-                    writer = PngWriter(fp, width, height, 'RGB')
+                    writer = PngWriter(fp.name, width, height, 'RGB')
                     data = stream.get_data()
                     writer.write(data)
                 else:
