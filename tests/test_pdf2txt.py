@@ -5,7 +5,9 @@ from tools.pdf2txt import (
     handle_input_variables,
     convert_from_pdf,
     ConverterParams,
-    OutputType
+    OutputType,
+    split_by_chapters,
+    write_chapters_to_files
     )
 from pdfminer.layout import LAParams
 
@@ -112,6 +114,30 @@ class TestPdf2Text(unittest.TestCase):
         with open(test_filename, 'r') as file:
             contents = file.read()
             self.assertEqual(contents, expected_output)
+
+
+class TestPdf2Chapters(unittest.TestCase):
+
+    def setUp(self) -> None:
+
+        self.course_book_txt_file = os.path.join(
+            os.path.dirname(__file__), '../samples/samples_for_chapter_retrieval/course_book_full.txt'
+        )
+        self.course_book_pdf_file = os.path.join(
+            os.path.dirname(__file__), '../samples/samples_for_chapter_retrieval/course_book_full.pdf'
+        )
+
+    def test_split_txt_file_by_chapters(self):
+        chapters = split_by_chapters(self.course_book_txt_file)
+        expected_length = 26
+        self.assertEqual(len(chapters), expected_length)
+
+    def test_write_chapters_to_txt_files(self):
+        test_chapter_path = os.path.join(
+            os.path.dirname(__file__), 'test_chapters/'
+        )
+        chapters = split_by_chapters(self.course_book_txt_file)
+        write_chapters_to_files(chapters, path=test_chapter_path)
 
 
 if __name__ == '__main__':

@@ -15,6 +15,8 @@ from typing import List, Tuple, Union, Set
 from dataclasses import dataclass
 from enum import Enum
 
+import re
+
 from pdfminer.pdfparser import PDFParser
 
 
@@ -34,6 +36,7 @@ class ConverterParams:
     scale: int = 1
     caching: bool = True
     showpageno: bool = True
+    get_chapters: bool = False
 
 
 class OutputType(Enum):
@@ -47,7 +50,7 @@ def _print_help_message(command: str = ""):
     print(f'usage: {command} [-P password] [-o output] [-t text|html|xml|tag]'
           ' [-O output_dir] [-c encoding] [-s scale] [-R rotation]'
           ' [-Y normal|loose|exact] [-p pagenos] [-m maxpages]'
-          ' [-S] [-C] [-n] [-A] [-V] [-M char_margin] [-L line_margin]'
+          ' [-S] [-C] [-n] [-A] [-V] [-h] [-M char_margin] [-L line_margin]'
           ' [-W word_margin] [-F boxes_flow] [-d] input.pdf ...')
 
 
@@ -104,7 +107,14 @@ def handle_input_variables(
             ConverterParams.laparams.line_margin = float(v)
         elif k == '-F':
             ConverterParams.laparams.boxes_flow = float(v)
+        elif k == '-h':
+            ConverterParams.get_chapters = True
 
+        # Special considerations if the user wants to generate the book chapters as txt.
+        if ConverterParams.get_chapters:
+            chapters = split_by_chapters(filenames[0])
+            write_chapters_to_files(chapters)
+            return
         convert_from_pdf(filenames, converter_params, outtype, outfile)
 
 
@@ -161,15 +171,52 @@ def convert_from_pdf(filenames: List[str],
                                           check_extractable=True):
                 page.rotate = (page.rotate + params.rotation) % 360
                 interpreter.process_page(page)
+
     device.close()
     outfp.close()
+
+
+def split_by_chapters(file_name: str) -> List[str]:
+    if not file_name.endswith('.txt'):
+        raise Exception('File type must be Text File')
+    with open(file_name, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+
+    chapter = 0
+
+    chapters = [""]
+
+    for line_nr in range(0, len(lines) - 1):
+
+        curr_line = lines[line_nr]
+        next_line = lines[line_nr + 1]
+
+        if 'Chapter' in curr_line and next_line == '\n':
+            is_number = re.compile(r'\d+$')  # Find number and only number
+            chapter_number = curr_line.split('Chapter')[1].strip()
+
+            if is_number.match(chapter_number):
+                chapter += 1
+                chapters.append('')
+        chapters[chapter] += curr_line
+
+    return chapters
+
+
+def write_chapters_to_files(chapters: List[str], path='') -> None:
+    index = 0
+    for chapter in chapters:
+        chapter_name = 'introduction.txt' if index == 0 else 'chapter' + str(index) + '.txt'
+        with open(path + chapter_name, 'w', encoding='utf-8') as f:
+            f.write(chapter)
+        index += 1
 
 
 def main(argv):
     try:
         options, filenames = getopt.getopt(
             argv[1:],
-            'dP:o:t:O:c:s:R:Y:p:m:SCnAVM:W:L:F:'
+            'dP:o:t:O:c:s:R:Y:p:m:SCnAVM:W:L:F:h:'
         )
         handle_input_variables(options, filenames)
     except getopt.GetoptError:
