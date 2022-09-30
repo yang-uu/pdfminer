@@ -1,6 +1,7 @@
 import unittest
 from pdfminer.psparser import KWD, LIT, PSEOF, PSBaseParser, PSStackParser
 
+
 class TestPSBaseParser(unittest.TestCase):
     TESTDATA = br'''%!PS
 begin end
@@ -98,5 +99,65 @@ func/a/b{(c)do*}def
         self.assertEqual(objs, self.OBJS)
         return
 
+    def test_parse_number(self):
+        test = b'123456789'
+        parser = PSBaseParser(fp=open("./output", "wb"))
+        parse = parser._parse_number(test, 0)
+        self.assertEqual(parse, 9)
+        return
+
+    def test_parse_number_valueError(self):
+        test = b'123abc'
+        parser = PSBaseParser(fp=open("./output", "wb"))
+        parser._curtoken = b'a'
+        parse = parser._parse_number(test, 0)
+        self.assertEqual(parse, 3)
+        return    
+
+    def test_parse_float(self):
+        test = b'123456789'
+        parser = PSBaseParser(fp=open("./output", "wb"))
+        parse = parser._parse_float(test, 0)
+        self.assertEqual(parse, 9)
+        return
+
+    def test_parse_float_valueError(self):
+        test = b'123abc'
+        parser = PSBaseParser(fp=open("./output", "wb"))
+        parser._curtoken = b'a'
+        parse = parser._parse_float(test, 0)
+        self.assertEqual(parse, 3)
+        return   
+
+    def test_parse_string(self):
+        test = b'hello'
+        parser = PSBaseParser(fp=open("./output", "wb"))
+        parse = parser._parse_string(test, 0)
+        self.assertEqual(parse, 5)
+        return
+
+    def test_parse_literal(self):
+        test = b'hello'
+        parser = PSBaseParser(fp=open("./output", "wb"))
+        parse = parser._parse_literal(test, 0)
+        self.assertEqual(parse, 5)
+        return
+
+    def test_parse_comment(self):
+        test = b'hello'
+        parser = PSBaseParser(fp=open("./output", "wb"))
+        parse = parser._parse_comment(test, 0)
+        self.assertEqual(parse[1], 5)
+        return
+
+    def test_parse_literal_valueError(self):
+        test = b'%%%%'
+        parser = PSBaseParser(fp=open("./output", "wb"))
+       
+        parser._curtoken = b'\xC0-\xC1'
+        self.assertRaises(UnicodeDecodeError, parser._parse_literal, test, 0)
+        return
+
+
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main() 

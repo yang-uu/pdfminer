@@ -3,7 +3,7 @@ import re
 import logging
 from .utils import choplist
 
-STRICT = 0
+STRICT = 1
 
 
 # PS Exceptions
@@ -178,15 +178,6 @@ class PSBaseParser:
 
     def tell(self):
         return self.bufpos + self.charpos
-
-    def poll(self, pos=None, n=80):
-        pos0 = self.fp.tell()
-        if not pos:
-            pos = self.bufpos + self.charpos
-        self.fp.seek(pos)
-        logging.info('poll(%d): %r' % (pos, self.fp.read(n)))
-        self.fp.seek(pos0)
-        return
 
     def seek(self, pos):
         """Seeks the parser to the given position.
