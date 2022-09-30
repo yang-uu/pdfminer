@@ -69,6 +69,7 @@ restricted PDF documents.
   * `-L line_margin` : Specifies the line margin.
   * `-F boxes_flow` : Specifies the box flow ratio.
   * `-d` : Turns on Debug output.
+  * `-X`: Extracted images are saved as .png files
   * `-h` : Separates the output text into different files based on chapters.
 
 ### dumppdf.py
