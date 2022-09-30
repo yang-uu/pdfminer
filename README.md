@@ -91,6 +91,12 @@ It dumps all the internal contents in pseudo-XML format.
   * `-T` : Tagged mode. Dumps the tagged contents.
   * `-O output_dir` : Output directory for extracted streams.
 
+### pdffonts.py
+
+pdffonts.py is used to extract font information from PDFs.
+
+    > pdffonts.py -P password input.pdf ...
+
 ## TODO
 
   * Replace STRICT variable with something better.
